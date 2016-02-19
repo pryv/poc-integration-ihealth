@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Launch DeviceListActivity -->
+    <item
+        android:id="@+id/connect_bt"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/connect"
+        android:visible="true"/>
+    <item
+        android:id="@+id/disconnect_bt"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/disconnect"
+        android:visible="true"/>
+
+    <item
+        android:id="@+id/stop"
+        android:showAsAction="never"
+        android:title="@string/stop"
+        android:visible="true"/>
+   
+</menu>
