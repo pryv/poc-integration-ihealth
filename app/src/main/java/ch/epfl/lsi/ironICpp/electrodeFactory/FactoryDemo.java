@@ -5,8 +5,8 @@ package ch.epfl.lsi.ironICpp.electrodeFactory;
  */
 public class FactoryDemo {
     public void main() {
-        ElectrodeFactory eF = new ElectrodeFactory();
-        Electrode e = eF.getElectrode("Glucose");
-        e.create();
+        MeasurementFactory eF = new MeasurementFactory();
+        Measurement e = eF.getMeasurement(new Byte("0x13"), 0.3);
+        e.save();
     }
 }
