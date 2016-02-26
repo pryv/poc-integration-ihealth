@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent" >
+   
+<CheckBox
+    android:id="@+id/checkBox2"
+    android:layout_width="0sp"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:gravity="center"
+    android:text="@string/checkbox_label" />
+
+<ImageButton
+    android:id="@+id/btn_remove"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:layout_margin="5dp"
+    android:background="@drawable/trash_bin_icon"
+    android:contentDescription="@string/remove_label" />
+ 
+</LinearLayout>

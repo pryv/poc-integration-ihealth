@@ -1,0 +1,47 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/colorful_backgrounds" >
+
+    <!-- The main content view -->
+
+        <ch.epfl.lsi.ironICpp.MultitouchPlot
+            android:id="@+id/multitouchPlot1"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_margin="0px"
+            android:layout_weight="1"
+            androidPlot.domainLabel="@string/plot_x_axis_legend"
+            androidPlot.graphWidget.domainLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+            androidPlot.graphWidget.domainOriginLabelPaint.textSize="@dimen/domain_tick_label_font_size"
+            androidPlot.graphWidget.marginBottom="20dp"
+            androidPlot.graphWidget.marginLeft="20dp"
+            androidPlot.graphWidget.marginRight="20dp"
+            androidPlot.graphWidget.marginTop="10dp"
+            androidPlot.graphWidget.rangeLabelPaint.textSize="@dimen/range_tick_label_font_size"
+            androidPlot.graphWidget.rangeOriginLabelPaint.textSize="@dimen/range_tick_label_font_size"
+            androidPlot.legendWidget.heightMetric.value="28dp"
+            androidPlot.legendWidget.iconSizeMetrics.heightMetric.value="18dp"
+            androidPlot.legendWidget.iconSizeMetrics.widthMetric.value="18dp"
+            androidPlot.legendWidget.positionMetrics.anchor="right_bottom"
+            androidPlot.legendWidget.textPaint.textSize="@dimen/legend_text_font_size"
+            androidPlot.plotMarginBottom="0dp"
+            androidPlot.plotMarginLeft="0dp"
+            androidPlot.plotMarginRight="0dp"
+            androidPlot.plotMarginTop="0dp"
+            androidPlot.rangeLabel="@string/plot_y_axis_legend" />
+
+    <!-- The navigation drawer -->
+
+    <ListView
+        android:id="@+id/right_drawer"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="#111"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" />
+
+</android.support.v4.widget.DrawerLayout>
