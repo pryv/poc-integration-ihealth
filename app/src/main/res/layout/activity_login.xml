@@ -9,60 +9,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="lsi.pryv.epfl.pryvironic.LoginActivity">
 
-    <TextView
-        android:id="@+id/user_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/user_text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <EditText
-        android:id="@+id/user_field"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:layout_below="@+id/user_title"
-        android:layout_alignRight="@+id/button_login"
-        android:layout_alignEnd="@+id/button_login" />
-
-    <TextView
-        android:id="@+id/password_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_text"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <EditText
-        android:id="@+id/password_field"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:layout_below="@+id/password_title"
-        android:layout_alignRight="@+id/button_login"
-        android:layout_alignEnd="@+id/button_login" />
-
-    <Button
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="@string/login_button"
-        android:onClick="login"
-        android:id="@+id/button_login"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="@string/signin_button"
-        android:onClick="signin"
-        android:id="@+id/button_signin"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
+    <WebView  xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/webview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        />
 
 </RelativeLayout>

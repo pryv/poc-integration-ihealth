@@ -3,6 +3,7 @@ package lsi.pryv.epfl.pryvironic;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,21 +46,15 @@ public class LoginActivity extends AppCompatActivity {
     private String webViewUrl;
     private String message;
 
+    private WebView web;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        userField = (EditText) findViewById(R.id.user_field);
-        passwordField = (EditText) findViewById(R.id.password_field);
-    }
+        web = (WebView) findViewById(R.id.webview);
 
-    public void login(View view) {
-        String user = userField.getText().toString();
-        String password = passwordField.getText().toString();
-    }
-
-    public void signin(View view) {
         permissions.add(testPermission1);
         permissions.add(testPermission2);
         Pryv.setDomain("pryv-switch.ch");
@@ -90,43 +85,10 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             if(webViewUrl!=null) {
                 progressDialog.dismiss();
-                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
-                WebView webView = new WebView(LoginActivity.this);
-                webView.loadUrl(webViewUrl);
-                webView.requestFocus(View.FOCUS_DOWN);
-                webView.setOnTouchListener(new View.OnTouchListener()
-                {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event)
-                    {
-                        switch (event.getAction())
-                        {
-                            case MotionEvent.ACTION_DOWN:
-                            case MotionEvent.ACTION_UP:
-                                if (!v.hasFocus())
-                                {
-                                    v.requestFocus();
-                                }
-                                break;
-                        }
-                        return false;
-                    }
-                });
-                webView.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                        view.loadUrl(url);
-                        return true;
-                    }
-                });
-                alert.setView(webView);
-                alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-                alert.show();
+                web.loadUrl(webViewUrl);
+                web.requestFocus(View.FOCUS_DOWN);
+                web.getSettings().setJavaScriptEnabled(true);
+                web.getSettings().setUseWideViewPort(true);
             } else {
                 progressDialog.setMessage(message);
             }
@@ -143,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onAuthSuccess(String username, String token) {
             CreditentialsManager.setCreditentials(username, token);
-            message = "You can now login!";
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         }
 
         @Override
