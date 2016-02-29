@@ -2,17 +2,15 @@ package lsi.pryv.epfl.pryvironic;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.pryv.Pryv;
 import com.pryv.api.model.Permission;
@@ -20,6 +18,7 @@ import com.pryv.auth.AuthController;
 import com.pryv.auth.AuthControllerImpl;
 import com.pryv.auth.AuthView;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     private String lang = "en";
     private String returnURL = "fakeURL";
 
-    private ProgressDialog progressDialog;
+    private String webViewUrl;
+    private String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +52,6 @@ public class LoginActivity extends AppCompatActivity {
 
         userField = (EditText) findViewById(R.id.user_field);
         passwordField = (EditText) findViewById(R.id.password_field);
-
-        progressDialog = new ProgressDialog(LoginActivity.this);
-
     }
 
     public void login(View view) {
@@ -65,69 +62,98 @@ public class LoginActivity extends AppCompatActivity {
     public void signin(View view) {
         permissions.add(testPermission1);
         permissions.add(testPermission2);
+        Pryv.setDomain("pryv-switch.ch");
         new SigninAsync().execute();
     }
 
-    private class SigninAsync extends AsyncTask<Void, Void, String> {
+    private class SigninAsync extends AsyncTask<Void, Void, Void> {
+
+        private ProgressDialog progressDialog;
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(LoginActivity.this);
+            progressDialog.setMessage("Signin...");
+            progressDialog.show();
+            progressDialog.setCancelable(false);
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
             AuthController authenticator = new AuthControllerImpl(reqAppId, permissions, lang, returnURL, new CustomAuthView());
             authenticator.signIn();
             return null;
         }
 
         @Override
-        protected void onPreExecute(){
-            progressDialog.setMessage("Signing in...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+        protected void onPostExecute(Void result) {
+            if(webViewUrl!=null) {
+                progressDialog.dismiss();
+                AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                WebView webView = new WebView(LoginActivity.this);
+                webView.loadUrl(webViewUrl);
+                webView.requestFocus(View.FOCUS_DOWN);
+                webView.setOnTouchListener(new View.OnTouchListener()
+                {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event)
+                    {
+                        switch (event.getAction())
+                        {
+                            case MotionEvent.ACTION_DOWN:
+                            case MotionEvent.ACTION_UP:
+                                if (!v.hasFocus())
+                                {
+                                    v.requestFocus();
+                                }
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                webView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        return true;
+                    }
+                });
+                alert.setView(webView);
+                alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                alert.show();
+            } else {
+                progressDialog.setMessage(message);
+            }
         }
-
     }
 
     private class CustomAuthView implements AuthView {
 
         @Override
         public void displayLoginView(String loginURL) {
-            progressDialog.dismiss();
-            AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
-            WebView webView = new WebView(LoginActivity.this);
-            webView.loadUrl(loginURL);
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    view.loadUrl(url);
-                    return true;
-                }
-            });
-            alert.setView(webView);
-            alert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
-            alert.show();
+            webViewUrl = loginURL;
         }
 
         @Override
         public void onAuthSuccess(String username, String token) {
             CreditentialsManager.setCreditentials(username, token);
-            progressDialog.setMessage("Creditentials created, you can now login!");
-            progressDialog.setCancelable(true);
+            message = "You can now login!";
         }
 
         @Override
         public void onAuthError(String msg) {
-            progressDialog.setMessage(msg);
-            progressDialog.setCancelable(true);
+            message = msg;
         }
 
         @Override
-        public void onAuthRefused(int reasonId, String message, String detail) {
-            progressDialog.setMessage(message);
-            progressDialog.setCancelable(true);
+        public void onAuthRefused(int reasonId, String msg, String detail) {
+            message = msg;
         }
 
     }
