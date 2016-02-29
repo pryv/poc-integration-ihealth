@@ -23,7 +23,7 @@ public class Connector {
     public static void initiateConnection() {
         Pryv.deactivateCache();
         Pryv.deactivateSupervisor();
-        connection = new Connection("tmodoux", "cikxq15dt0he41fyqu194bhre", new DBinitCallback() {
+        connection = new Connection(AccountManager.userName, AccountManager.token, new DBinitCallback() {
         });
         instanciateSCB();
         instanciateECB();

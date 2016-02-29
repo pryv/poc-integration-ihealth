@@ -17,10 +17,12 @@ import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
 
-
     private String webViewUrl;
     private String message;
     private WebView webView;
+
+    private Permission creatorPermission = new Permission("*", Permission.Level.manage, "Creator");
+    private ArrayList<Permission> permissions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
 
         webView = (WebView) findViewById(R.id.webview);
         Pryv.setDomain(AccountManager.DOMAIN);
+        permissions = new ArrayList<>();
+        permissions.add(creatorPermission);
         new SigninAsync().execute();
     }
 
@@ -47,7 +51,8 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            AuthController authenticator = new AuthControllerImpl(AccountManager.APPID, new ArrayList<Permission>(), null, null, new CustomAuthView());
+
+            AuthController authenticator = new AuthControllerImpl(AccountManager.APPID, permissions, null, null, new CustomAuthView());
             authenticator.signIn();
             return null;
         }
