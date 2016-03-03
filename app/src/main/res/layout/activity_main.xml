@@ -5,12 +5,13 @@
     android:orientation="vertical" >
 
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/checkbox_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
 
     <Button
+        android:id="@+id/start_button"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="@string/start_button"

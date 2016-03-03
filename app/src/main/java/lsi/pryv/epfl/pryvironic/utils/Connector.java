@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic;
+package lsi.pryv.epfl.pryvironic.utils;
 
 import android.util.Log;
 

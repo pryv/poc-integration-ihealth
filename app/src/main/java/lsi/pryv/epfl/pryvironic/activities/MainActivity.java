@@ -1,37 +1,27 @@
-package lsi.pryv.epfl.pryvironic;
+package lsi.pryv.epfl.pryvironic.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.pryv.Connection;
-import com.pryv.Pryv;
-import com.pryv.api.EventsCallback;
-import com.pryv.api.StreamsCallback;
-import com.pryv.api.database.DBinitCallback;
-import com.pryv.api.model.Event;
-import com.pryv.api.model.Stream;
-
-import java.util.Map;
-
-import lsi.pryv.epfl.pryvironic.structures.Electrode;
-import lsi.pryv.epfl.pryvironic.structures.Sensor;
+import lsi.pryv.epfl.pryvironic.utils.AccountManager;
+import lsi.pryv.epfl.pryvironic.utils.Connector;
+import lsi.pryv.epfl.pryvironic.R;
+import lsi.pryv.epfl.pryvironic.structures.BloodSensor;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static Sensor sensor = null;
+    private static BloodSensor sensor = null;
     private ListView electrodesList;
     private String[] electrodes;
 
@@ -41,9 +31,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Connector.initiateConnection();
-        sensor = new Sensor();
+        sensor = new BloodSensor();
 
-        electrodesList = (ListView)findViewById(R.id.listView1);
+        electrodesList = (ListView)findViewById(R.id.checkbox_list);
         electrodes = sensor.getElectrodes().keySet().toArray(new String[sensor.getElectrodes().keySet().size()]);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item, electrodes);
@@ -80,13 +70,37 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Log out")
+                .setMessage("You are about to log out. Continue?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        AccountManager.resetCreditentials();
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
     public void startMeasurement(View view) {
-        for(String electrode: electrodes) {
-            Electrode currentElectrode = sensor.getElectrodeFromStringID(electrode);
-            if(currentElectrode.isActive()) {
-                currentElectrode.save();
-            }
+        if(sensor.getActiveElectrode().size()>0) {
+            Intent intent = new Intent(this, MonitoringActivity.class);
+            intent.putExtra("electrodes",sensor.getActiveElectrode());
+            startActivity(intent);
+        } else {
+            Toast.makeText(this,"No electrode to monitor!",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public BloodSensor getSensor() {
+        return sensor;
     }
 
 }

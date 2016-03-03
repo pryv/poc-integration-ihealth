@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic;
+package lsi.pryv.epfl.pryvironic.utils;
 
 /**
  * Created by Thieb on 29.02.2016.
@@ -12,5 +12,10 @@ public class AccountManager {
     public static void setCreditentials(String user, String tk) {
         userName = user;
         token = tk;
+    }
+
+    public static void resetCreditentials() {
+        userName = null;
+        token = null;
     }
 }

@@ -1,12 +1,16 @@
-package lsi.pryv.epfl.pryvironic;
+package lsi.pryv.epfl.pryvironic.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+
 import com.pryv.Pryv;
 import com.pryv.api.model.Permission;
 import com.pryv.auth.AuthController;
@@ -15,10 +19,13 @@ import com.pryv.auth.AuthView;
 
 import java.util.ArrayList;
 
+import lsi.pryv.epfl.pryvironic.utils.AccountManager;
+import lsi.pryv.epfl.pryvironic.R;
+
 public class LoginActivity extends AppCompatActivity {
 
     private String webViewUrl;
-    private String message;
+    private String errorMessage = "Unknown error";
     private WebView webView;
 
     private Permission creatorPermission = new Permission("*", Permission.Level.manage, "Creator");
@@ -51,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-
             AuthController authenticator = new AuthControllerImpl(AccountManager.APPID, permissions, null, null, new CustomAuthView());
             authenticator.signIn();
             return null;
@@ -59,17 +65,17 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            if(webViewUrl!=null) {
-                progressDialog.dismiss();
+            progressDialog.dismiss();
+            if (webViewUrl != null) {
                 webView.requestFocus(View.FOCUS_DOWN);
                 webView.getSettings().setJavaScriptEnabled(true);
                 webView.getSettings().setUseWideViewPort(true);
                 webView.loadUrl(webViewUrl);
             } else {
-                progressDialog.setMessage(message);
-                progressDialog.setCancelable(true);
+                showError();
             }
         }
+
     }
 
     private class CustomAuthView implements AuthView {
@@ -88,14 +94,27 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onAuthError(String msg) {
-            message = msg;
+            errorMessage = msg;
         }
 
         @Override
         public void onAuthRefused(int reasonId, String msg, String detail) {
-            message = msg;
+            errorMessage = msg;
         }
+    }
 
+    public void showError() {
+        new AlertDialog.Builder(this)
+                .setTitle("Authentification error: ")
+                .setMessage(errorMessage)
+                .setPositiveButton("Try again", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                        startActivity(getIntent());
+                    }
+                })
+                .show();
     }
 
 }
