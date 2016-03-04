@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static BloodSensor sensor = null;
     private ListView electrodesList;
     private String[] electrodes;
+    private final static int BLUETOOTH_PAIRING = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         electrodesList = (ListView)findViewById(R.id.checkbox_list);
         electrodes = sensor.getElectrodes().keySet().toArray(new String[sensor.getElectrodes().keySet().size()]);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item, electrodes);
+        ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.check_item, electrodes);
         electrodesList.setAdapter(adapter);
         electrodesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         electrodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -57,14 +58,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.bluetooth_devices:
+                Intent intent = new Intent(this,BluetoothPairingActivity.class);
+                startActivityForResult(intent, BLUETOOTH_PAIRING);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -89,13 +88,26 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void startMeasurement(View view) {
+        public void startMeasurement(View view) {
         if(sensor.getActiveElectrode().size()>0) {
             Intent intent = new Intent(this, MonitoringActivity.class);
             intent.putExtra("electrodes",sensor.getActiveElectrode());
             startActivity(intent);
         } else {
             Toast.makeText(this,"No electrode to monitor!",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == BLUETOOTH_PAIRING) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // TODO
+            } else {
+                Toast.makeText(this, data.getExtras().getString(BluetoothPairingActivity.BLUETOOTH_ERROR), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

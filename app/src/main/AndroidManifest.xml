@@ -3,6 +3,7 @@
     package="lsi.pryv.epfl.pryvironic">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +23,7 @@
         </activity>
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.MonitoringActivity" />
+        <activity android:name=".activities.BluetoothPairingActivity"></activity>
     </application>
 
 </manifest>
