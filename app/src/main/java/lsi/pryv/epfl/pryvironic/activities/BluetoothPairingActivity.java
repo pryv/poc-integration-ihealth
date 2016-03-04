@@ -26,6 +26,7 @@ public class BluetoothPairingActivity extends AppCompatActivity {
     public final static String BLUETOOTH_ERROR = "BluetoothError";
     private final static String ENABLED_ERROR = "Bluetooth is not enabled!";
     private final static String SUPPORTED_ERROR = "Bluetooth is not supported!";
+    private final static String CANCEL_ERROR = "Bluetooth pairing canceled!";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,11 @@ public class BluetoothPairingActivity extends AppCompatActivity {
                 endWithError(ENABLED_ERROR);
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        endWithError(CANCEL_ERROR);
     }
 
     private void updateDevicesList() {
