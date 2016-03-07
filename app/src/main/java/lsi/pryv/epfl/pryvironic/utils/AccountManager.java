@@ -1,5 +1,7 @@
 package lsi.pryv.epfl.pryvironic.utils;
 
+import lsi.pryv.epfl.pryvironic.activities.BluetoothPairingActivity;
+
 /**
  * Created by Thieb on 29.02.2016.
  */
@@ -14,8 +16,9 @@ public class AccountManager {
         token = tk;
     }
 
-    public static void resetCreditentials() {
+    public static void logout() {
         userName = null;
         token = null;
+        BluetoothPairingActivity.connectedDevice = null;
     }
 }

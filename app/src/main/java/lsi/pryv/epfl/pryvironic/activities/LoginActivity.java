@@ -5,9 +5,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -19,8 +18,8 @@ import com.pryv.auth.AuthView;
 
 import java.util.ArrayList;
 
-import lsi.pryv.epfl.pryvironic.utils.AccountManager;
 import lsi.pryv.epfl.pryvironic.R;
+import lsi.pryv.epfl.pryvironic.utils.AccountManager;
 
 public class LoginActivity extends AppCompatActivity {
 

@@ -1,8 +1,5 @@
 package lsi.pryv.epfl.pryvironic.structures;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 import java.util.HashMap;
 

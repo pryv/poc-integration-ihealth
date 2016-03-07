@@ -5,19 +5,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import lsi.pryv.epfl.pryvironic.utils.AccountManager;
-import lsi.pryv.epfl.pryvironic.utils.Connector;
 import lsi.pryv.epfl.pryvironic.R;
 import lsi.pryv.epfl.pryvironic.structures.BloodSensor;
+import lsi.pryv.epfl.pryvironic.utils.AccountManager;
+import lsi.pryv.epfl.pryvironic.utils.Connector;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,24 +77,25 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        AccountManager.resetCreditentials();
+                        AccountManager.logout();
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }
-
                 })
                 .setNegativeButton("No", null)
                 .show();
     }
 
         public void startMeasurement(View view) {
-        if(sensor.getActiveElectrode().size()>0) {
+        if(sensor.getActiveElectrode().size()<=0) {
+            Toast.makeText(this,"No electrode to monitor!",Toast.LENGTH_SHORT).show();
+        } else if(BluetoothPairingActivity.connectedDevice==null) {
+            Toast.makeText(this,"No device connected!",Toast.LENGTH_SHORT).show();
+        } else {
             Intent intent = new Intent(this, MonitoringActivity.class);
             intent.putExtra("electrodes",sensor.getActiveElectrode());
             startActivity(intent);
-        } else {
-            Toast.makeText(this,"No electrode to monitor!",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == BLUETOOTH_PAIRING) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // TODO
+                Toast.makeText(this, "Connected to : " + data.getExtras().getString(BluetoothPairingActivity.BLUETOOTH_NAME), Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, data.getExtras().getString(BluetoothPairingActivity.BLUETOOTH_ERROR), Toast.LENGTH_SHORT).show();
             }

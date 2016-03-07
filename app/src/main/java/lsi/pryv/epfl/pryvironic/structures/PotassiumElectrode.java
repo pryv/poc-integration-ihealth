@@ -1,7 +1,5 @@
 package lsi.pryv.epfl.pryvironic.structures;
 
-import com.pryv.api.model.Event;
-
 /**
  * Created by Thieb on 19.02.2016.
  */

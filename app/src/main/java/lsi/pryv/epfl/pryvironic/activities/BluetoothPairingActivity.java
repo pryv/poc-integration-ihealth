@@ -4,29 +4,28 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.ArrayList;
 
 import lsi.pryv.epfl.pryvironic.R;
 
 public class BluetoothPairingActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
-    private HashMap<String,BluetoothDevice> pairedDevices;
+    private ArrayList<BluetoothDevice> pairedDevices;
     private ListView devicesList;
     private final static int BLUETOOTH_ENABLED = 1;
     public final static String BLUETOOTH_ERROR = "BluetoothError";
+    public final static String BLUETOOTH_NAME = "BluetoothName";
     private final static String ENABLED_ERROR = "Bluetooth is not enabled!";
     private final static String SUPPORTED_ERROR = "Bluetooth is not supported!";
     private final static String CANCEL_ERROR = "Bluetooth pairing canceled!";
+    public static BluetoothDevice connectedDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +41,8 @@ public class BluetoothPairingActivity extends AppCompatActivity {
             // Bluetooth is not enable
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent,BLUETOOTH_ENABLED);
+        } else {
+            updateDevicesList();
         }
     }
 
@@ -64,16 +65,14 @@ public class BluetoothPairingActivity extends AppCompatActivity {
     }
 
     private void updateDevicesList() {
-        pairedDevices = new HashMap();
-        Set<BluetoothDevice> boundedDevices = bluetoothAdapter.getBondedDevices();
+        pairedDevices = new ArrayList();
+        pairedDevices.addAll(bluetoothAdapter.getBondedDevices());
 
-        if(boundedDevices!=null) {
-            for(BluetoothDevice device: boundedDevices) {
-                pairedDevices.put(device.getName() + "\n" + device.getAddress(), device);
-            }
+        ArrayList<String> devices = new ArrayList();
+        for(BluetoothDevice device: pairedDevices) {
+            devices.add(device.getName()+"\n"+device.getAddress());
         }
 
-        String[] devices = pairedDevices.keySet().toArray(new String[pairedDevices.keySet().size()]);
 
         devicesList = (ListView)findViewById(R.id.devices_list);
         ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.device_item, devices);
@@ -81,9 +80,17 @@ public class BluetoothPairingActivity extends AppCompatActivity {
         devicesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO
+                connectedDevice = pairedDevices.get(position);
+                connect(connectedDevice);
             }
         });
+    }
+
+    private void connect(BluetoothDevice device) {
+        Intent intent = new Intent();
+        intent.putExtra(BLUETOOTH_NAME, device.getName());
+        setResult(Activity.RESULT_OK, intent);
+        finish();
     }
 
     private void endWithError(String error) {
