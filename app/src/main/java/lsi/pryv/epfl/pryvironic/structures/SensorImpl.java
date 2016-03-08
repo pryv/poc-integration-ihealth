@@ -6,35 +6,17 @@ import java.util.HashMap;
 /**
  * Created by Thieb on 19.02.2016.
  */
-public class BloodSensor implements Serializable, Sensor{
+public class SensorImpl implements Serializable, Sensor{
     private HashMap<String, Electrode> electrodes;
-    private GlucoseElectrode glucose;
-    private LactateElectrode lactate;
-    private BilirubinElectrode bilirubin;
-    private PotassiumElectrode potassium;
-    private TemperatureElectrode temperature;
-    private PHElectrode ph;
+    private Electrode glucose;
+    private Electrode lactate;
+    private Electrode bilirubin;
+    private Electrode potassium;
+    private Electrode temperature;
+    private Electrode ph;
 
-    public BloodSensor() {
-        electrodes = new HashMap<>();
+    public SensorImpl() {
 
-        glucose = new GlucoseElectrode();
-        electrodes.put(glucose.getName(), glucose);
-
-        lactate = new LactateElectrode();
-        electrodes.put(lactate.getName(), lactate);
-
-        bilirubin = new BilirubinElectrode();
-        electrodes.put(bilirubin.getName(), bilirubin);
-
-        potassium = new PotassiumElectrode();
-        electrodes.put(potassium.getName(), potassium);
-
-        temperature = new TemperatureElectrode();
-        electrodes.put(temperature.getName(), temperature);
-
-        ph = new PHElectrode();
-        electrodes.put(ph.getName(), ph);
     }
 
     // Use this method to get the appropriate Electrode

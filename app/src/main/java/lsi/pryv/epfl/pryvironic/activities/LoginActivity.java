@@ -86,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onAuthSuccess(String username, String token) {
+            //TODO: Prefs
             AccountManager.setCreditentials(username, token);
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);

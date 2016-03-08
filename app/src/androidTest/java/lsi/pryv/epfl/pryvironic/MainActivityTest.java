@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 
 import lsi.pryv.epfl.pryvironic.activities.MainActivity;
 import lsi.pryv.epfl.pryvironic.structures.Electrode;
-import lsi.pryv.epfl.pryvironic.structures.BloodSensor;
+import lsi.pryv.epfl.pryvironic.structures.SensorImpl;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -40,7 +40,7 @@ import static org.hamcrest.Matchers.anything;
 @LargeTest
 public class MainActivityTest {
 
-    private BloodSensor sensor;
+    private SensorImpl sensor;
     private int size;
 
     @Rule
