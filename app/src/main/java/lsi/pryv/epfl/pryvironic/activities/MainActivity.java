@@ -20,10 +20,6 @@ import lsi.pryv.epfl.pryvironic.utils.AccountManager;
 import lsi.pryv.epfl.pryvironic.utils.Connector;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static SensorImpl sensor = null;
-    private ListView electrodesList;
-    private String[] electrodes;
     private final static int BLUETOOTH_PAIRING = 1;
 
     @Override
@@ -32,21 +28,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Connector.initiateConnection();
-        sensor = new SensorImpl();
-
-        electrodesList = (ListView)findViewById(R.id.checkbox_list);
-        electrodes = sensor.getElectrodes().keySet().toArray(new String[sensor.getElectrodes().keySet().size()]);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.check_item, electrodes);
-        electrodesList.setAdapter(adapter);
-        electrodesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        electrodesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CheckedTextView checkBox = (CheckedTextView) view;
-                sensor.getElectrodes().get(checkBox.getText()).setActive(checkBox.isChecked());
-            }
-        });
     }
 
     @Override
@@ -88,18 +69,6 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-        public void startMeasurement(View view) {
-        if(sensor.getActiveElectrode().size()<=0) {
-            Toast.makeText(this,"No electrode to monitor!",Toast.LENGTH_SHORT).show();
-        } else if(BluetoothPairingActivity.connectedDevice==null) {
-            Toast.makeText(this,"No device connected!",Toast.LENGTH_SHORT).show();
-        } else {
-            Intent intent = new Intent(this, MonitoringActivity.class);
-            intent.putExtra("electrodes",sensor.getActiveElectrode());
-            startActivity(intent);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
@@ -111,10 +80,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, data.getExtras().getString(BluetoothPairingActivity.BLUETOOTH_ERROR), Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    public SensorImpl getSensor() {
-        return sensor;
     }
 
 }

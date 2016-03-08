@@ -21,7 +21,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.MainActivity" />
-        <activity android:name=".activities.MonitoringActivity" />
         <activity android:name=".activities.BluetoothPairingActivity"></activity>
     </application>
 
