@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            AuthController authenticator = new AuthControllerImpl(APPID, permissions, null, null, new CustomAuthView());
+            AuthController authenticator = new AuthController(APPID, permissions, null, null, new CustomAuthView());
             authenticator.signIn();
             return null;
         }
