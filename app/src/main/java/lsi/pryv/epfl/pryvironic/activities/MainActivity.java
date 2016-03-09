@@ -7,7 +7,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
+
+import com.pryv.api.model.Event;
+import com.pryv.api.model.Stream;
 
 import lsi.pryv.epfl.pryvironic.R;
 import lsi.pryv.epfl.pryvironic.utils.Connector;
@@ -21,6 +26,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Connector.initiateConnection();
+
+        final Stream stream = new Stream();
+        stream.setId("AM3S");
+        stream.setName("SmartWatch_records");
+        Connector.saveStream(stream);
+
+        Button testButton = (Button)findViewById(R.id.test_button);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Event event = new Event();
+                event.setStreamId(stream.getId());
+                event.setType("note/txt");
+                event.setContent("This is a test record");
+                Connector.saveEvent(event);
+            }
+        });
     }
 
     @Override
