@@ -129,32 +129,32 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setCreditentials(String username, String token) {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(encrypt(USERNAME), encrypt(username));
-        editor.putString(encrypt(TOKEN), encrypt(token));
+        editor.putString(USERNAME, encrypt(username));
+        editor.putString(TOKEN, encrypt(token));
         editor.apply();
     }
 
     public static void resetCreditentials() {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.remove(encrypt(USERNAME));
-        editor.remove(encrypt(TOKEN));
+        editor.remove(USERNAME);
+        editor.remove(TOKEN);
         editor.apply();
     }
 
     public static String getUsername() {
-        return preferences.getString(decrypt(USERNAME), null);
+        return decrypt(preferences.getString(USERNAME, null));
     }
 
     public static String getToken() {
-        return preferences.getString(decrypt(TOKEN), null);
+        return decrypt(preferences.getString(TOKEN, null));
     }
 
     public static String encrypt(String input) {
-        return Base64.encodeToString(input.getBytes(), Base64.DEFAULT);
+        return (input != null) ? Base64.encodeToString(input.getBytes(), Base64.DEFAULT) : null;
     }
 
     public static String decrypt(String input) {
-        return new String(Base64.decode(input, Base64.DEFAULT));
+        return (input != null) ? new String(Base64.decode(input, Base64.DEFAULT)) : null;
     }
 
 }
