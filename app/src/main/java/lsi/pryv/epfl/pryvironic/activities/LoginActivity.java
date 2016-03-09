@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void setCreditentials(String username, String token) {
+    public static void setCreditentials(String username, String token) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(USERNAME, encrypt(username));
         editor.putString(TOKEN, encrypt(token));
