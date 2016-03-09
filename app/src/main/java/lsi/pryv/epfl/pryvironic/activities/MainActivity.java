@@ -7,16 +7,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import lsi.pryv.epfl.pryvironic.R;
-import lsi.pryv.epfl.pryvironic.structures.SensorImpl;
-import lsi.pryv.epfl.pryvironic.utils.AccountManager;
 import lsi.pryv.epfl.pryvironic.utils.Connector;
 
 public class MainActivity extends AppCompatActivity {
@@ -58,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //TODO: Prefs
-                        AccountManager.logout();
+                        logout();
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
@@ -67,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+
+    private void logout() {
+        LoginActivity.resetCreditentials();
+        BluetoothPairingActivity.connectedDevice = null;
     }
 
     @Override

@@ -4,9 +4,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -19,7 +21,6 @@ import com.pryv.auth.AuthView;
 import java.util.ArrayList;
 
 import lsi.pryv.epfl.pryvironic.R;
-import lsi.pryv.epfl.pryvironic.utils.AccountManager;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -30,13 +31,23 @@ public class LoginActivity extends AppCompatActivity {
     private Permission creatorPermission = new Permission("*", Permission.Level.manage, "Creator");
     private ArrayList<Permission> permissions;
 
+    private final static String CREDITENTIALS = "creditentials";
+    private final static String USERNAME = "username";
+    private final static String TOKEN = "token";
+    private static SharedPreferences preferences;
+
+    public final static String DOMAIN = "pryv-switch.ch";
+    public final static String APPID = "app-android-iHealth";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        preferences = getSharedPreferences(CREDITENTIALS, MODE_PRIVATE);
+
         webView = (WebView) findViewById(R.id.webview);
-        Pryv.setDomain(AccountManager.DOMAIN);
+        Pryv.setDomain(DOMAIN);
         permissions = new ArrayList<>();
         permissions.add(creatorPermission);
         new SigninAsync().execute();
@@ -57,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            AuthController authenticator = new AuthControllerImpl(AccountManager.APPID, permissions, null, null, new CustomAuthView());
+            AuthController authenticator = new AuthControllerImpl(APPID, permissions, null, null, new CustomAuthView());
             authenticator.signIn();
             return null;
         }
@@ -86,8 +97,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         public void onAuthSuccess(String username, String token) {
-            //TODO: Prefs
-            AccountManager.setCreditentials(username, token);
+            setCreditentials(username, token);
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
@@ -115,6 +125,36 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    private void setCreditentials(String username, String token) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(encrypt(USERNAME), encrypt(username));
+        editor.putString(encrypt(TOKEN), encrypt(token));
+        editor.apply();
+    }
+
+    public static void resetCreditentials() {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(encrypt(USERNAME));
+        editor.remove(encrypt(TOKEN));
+        editor.apply();
+    }
+
+    public static String getUsername() {
+        return preferences.getString(decrypt(USERNAME), null);
+    }
+
+    public static String getToken() {
+        return preferences.getString(decrypt(TOKEN), null);
+    }
+
+    public static String encrypt(String input) {
+        return Base64.encodeToString(input.getBytes(), Base64.DEFAULT);
+    }
+
+    public static String decrypt(String input) {
+        return new String(Base64.decode(input, Base64.DEFAULT));
     }
 
 }
