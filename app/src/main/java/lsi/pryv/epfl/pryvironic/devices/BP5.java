@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import lsi.pryv.epfl.pryvironic.R;
+import lsi.pryv.epfl.pryvironic.utils.Connector;
 
 /**
  * Activity for testing Bp5 device.
@@ -37,6 +38,9 @@ public class BP5 extends Activity implements OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bp5);
+
+        Connector.initiateConnection();
+
         Intent intent = getIntent();
         deviceMac = intent.getStringExtra("mac");
         findViewById(R.id.btn_getbattery).setOnClickListener(this);
@@ -99,6 +103,7 @@ public class BP5 extends Activity implements OnClickListener{
                     msg.what = HANDLER_MESSAGE;
                     msg.obj = "battery: " + battery;
                     myHandler.sendMessage(msg);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

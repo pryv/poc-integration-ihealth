@@ -14,11 +14,13 @@ import com.ihealth.communication.control.Am3sControl;
 import com.ihealth.communication.control.AmProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
+import com.pryv.api.model.Stream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import lsi.pryv.epfl.pryvironic.R;
+import lsi.pryv.epfl.pryvironic.utils.Connector;
 import lsi.pryv.epfl.pryvironic.utils.MyLog;
 
 public class AM3S extends Activity implements OnClickListener{
@@ -35,6 +37,8 @@ public class AM3S extends Activity implements OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_am3_s);
         myLog = new MyLog(TAG);
+
+        Connector.initiateConnection();
 
         clientId = iHealthDevicesManager.getInstance().registerClientCallback(iHealthDevicesCallback);
 
@@ -93,6 +97,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "battery: " + battery;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_QUERY_STATE_AM","ACTION_QUERY_STATE_AM");
+                        Connector.saveEvent(s.getId(),"note/txt","battery: " + battery);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -106,6 +114,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "User ID: " + id;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_USERID_AM","ACTION_USERID_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "User ID: " + id);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -118,6 +130,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "Alarm Num: " + alarm_num;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_GET_ALARMNUM_AM","ACTION_GET_ALARMNUM_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "Alarm Num: " + alarm_num);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -130,6 +146,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "Stage Data: " + stage_info;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_SYNC_STAGE_DATA_AM","ACTION_SYNC_STAGE_DATA_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "Stage Data: " + stage_info);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -142,6 +162,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "Sleep Data: " + stage_info;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_SYNC_SLEEP_DATA_AM","ACTION_SYNC_SLEEP_DATA_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "Sleep Data: " + stage_info);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -154,6 +178,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "Activity Data: " + activity_info;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_SYNC_ACTIVITY_DATA_AM","ACTION_SYNC_ACTIVITY_DATA_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "Activity Data: " + activity_info);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -166,6 +194,11 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "Real Step: " + real_info;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_SYNC_REAL_DATA_AM","ACTION_SYNC_REAL_DATA_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "Real Step: " + real_info);
+
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -178,6 +211,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "User Age: " + user_info;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_GET_USERINFO_AM","ACTION_GET_USERINFO_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "User Age: " + user_info);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -190,6 +227,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg.what = HANDLER_MESSAGE;
                         msg.obj = "Alarm ID: " + alarm_id;
                         myHandler.sendMessage(msg);
+
+                        Stream s = Connector.saveStream("ACTION_GET_ALARMINFO_AM","ACTION_GET_ALARMINFO_AM");
+                        Connector.saveEvent(s.getId(), "note/txt", "Alarm ID: " + alarm_id);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -199,6 +240,10 @@ public class AM3S extends Activity implements OnClickListener{
                     msg.what = HANDLER_MESSAGE;
                     msg.obj = "Set ID success";
                     myHandler.sendMessage(msg);
+
+                    Stream s = Connector.saveStream("ACTION_SET_USERID_SUCCESS_AM","ACTION_SET_USERID_SUCCESS_AM");
+                    Connector.saveEvent(s.getId(), "note/txt", "Set ID success");
+
                     break;
                 case AmProfile.ACTION_GET_RANDOM_AM:
                     try {
@@ -208,6 +253,10 @@ public class AM3S extends Activity implements OnClickListener{
                         msg1.what = HANDLER_MESSAGE;
                         msg1.obj = "Random: " + random;
                         myHandler.sendMessage(msg1);
+
+                        Stream s2 = Connector.saveStream("ACTION_GET_RANDOM_AM","ACTION_GET_RANDOM_AM");
+                        Connector.saveEvent(s2.getId(), "note/txt", "Random: " + random);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

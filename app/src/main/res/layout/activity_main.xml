@@ -7,8 +7,10 @@
 
     <TextView 
         android:id="@+id/tv_discovery"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click on discovery"
+        android:layout_gravity="center_horizontal" />
     
     <Button
         android:id="@+id/btn_discorvery_bp5"

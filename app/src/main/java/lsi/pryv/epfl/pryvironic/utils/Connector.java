@@ -31,12 +31,20 @@ public class Connector {
         instanciateECB();
     }
 
-    public static void saveEvent(Event event) {
+    public static void saveEvent(String streamId, String type, String content) {
+        Event event = new Event();
+        event.setStreamId(streamId);
+        event.setType(type);
+        event.setContent(content);
         connection.createEvent(event, eventsCallback);
     }
 
-    public static void saveStream(Stream stream) {
+    public static Stream saveStream(String id, String name) {
+        Stream stream = new Stream();
+        stream.setId(id);
+        stream.setName(name);
         connection.createStream(stream, streamsCallback);
+        return stream;
     }
 
     private static void instanciateECB() {

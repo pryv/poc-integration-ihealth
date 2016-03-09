@@ -363,18 +363,4 @@ public class MainActivity extends Activity implements OnClickListener {
                 .show();
     }
 
-    private void test() {
-        Connector.initiateConnection();
-
-        Stream stream = new Stream();
-        stream.setId("AM3S");
-        stream.setName("SmartWatch_records");
-        Connector.saveStream(stream);
-
-        Event event = new Event();
-        event.setStreamId(stream.getId());
-        event.setType("note/txt");
-        event.setContent("This is a test record");
-        Connector.saveEvent(event);
-    }
 }
