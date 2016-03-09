@@ -12,6 +12,8 @@ import com.pryv.api.model.Stream;
 
 import java.util.Map;
 
+import lsi.pryv.epfl.pryvironic.activities.LoginActivity;
+
 /**
  * Created by Thieb on 26.02.2016.
  */
@@ -23,7 +25,7 @@ public class Connector {
     public static void initiateConnection() {
         Pryv.deactivateCache();
         Pryv.deactivateSupervisor();
-        connection = new Connection(AccountManager.userName, AccountManager.token, new DBinitCallback() {
+        connection = new Connection(LoginActivity.getUsername(), LoginActivity.getToken(), new DBinitCallback() {
         });
         instanciateSCB();
         instanciateECB();
