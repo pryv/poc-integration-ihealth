@@ -4,13 +4,11 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import lsi.pryv.epfl.pryvironic.activities.LoginActivity;
-import lsi.pryv.epfl.pryvironic.activities.MainActivity;
 
 import static junit.framework.Assert.assertEquals;
 

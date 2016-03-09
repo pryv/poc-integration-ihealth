@@ -1,14 +1,59 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.helloworld.MainActivity" >
+
+    <TextView 
+        android:id="@+id/tv_discovery"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    
+    <Button
+        android:id="@+id/btn_discorvery_bp5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Discovery BP5 Device" />
 
     <Button
-        android:id="@+id/test_button"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_discorvery_am3s"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Event test"
-        android:layout_gravity="center_horizontal" />
+        android:text="Discovery AM3S Device" />
+
+    <Button
+        android:id="@+id/btn_stopdiscorvery"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop Discovery" />
+
+    <Button
+        android:id="@+id/btn_Certification"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Certification" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:text="Device Scan"
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/list_scan"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:text="Device Connected"
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/list_connected"
+        android:layout_width="fill_parent"
+        android:layout_height="600dp" />
 
 </LinearLayout>
