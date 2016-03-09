@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.View;
@@ -44,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        preferences = getSharedPreferences(CREDITENTIALS, MODE_PRIVATE);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         webView = (WebView) findViewById(R.id.webview);
         Pryv.setDomain(DOMAIN);

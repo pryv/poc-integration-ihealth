@@ -25,6 +25,9 @@ public class LoginTest {
     private final static String USERNAME = "dummyuser";
     private final static String TOKEN = "dummytoken";
 
+    @Rule
+    public ActivityTestRule<LoginActivity> loginActivityRule = new ActivityTestRule(LoginActivity.class);
+
     @Test
     public void empty_creditentials_check() {
         assertEquals(LoginActivity.getUsername(),null);
