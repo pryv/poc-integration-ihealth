@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic;
+package com.pryv.ihealth.android;
 
 import org.junit.Test;
 

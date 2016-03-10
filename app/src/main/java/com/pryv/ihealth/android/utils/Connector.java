@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic.utils;
+package com.pryv.ihealth.android.utils;
 
 import android.util.Log;
 
@@ -12,7 +12,7 @@ import com.pryv.api.model.Stream;
 
 import java.util.Map;
 
-import lsi.pryv.epfl.pryvironic.activities.LoginActivity;
+import com.pryv.ihealth.android.activities.LoginActivity;
 
 /**
  * Created by Thieb on 26.02.2016.

@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic.utils;
+package com.pryv.ihealth.android.utils;
 
 
 import android.util.Log;

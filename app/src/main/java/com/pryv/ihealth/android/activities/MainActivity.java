@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic.activities;
+package com.pryv.ihealth.android.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import lsi.pryv.epfl.pryvironic.R;
-import lsi.pryv.epfl.pryvironic.devices.AM3S;
-import lsi.pryv.epfl.pryvironic.devices.BP5;
-import lsi.pryv.epfl.pryvironic.utils.MyLog;
+import com.pryv.ihealth.android.R;
+import com.pryv.ihealth.android.devices.AM3S;
+import com.pryv.ihealth.android.devices.BP5;
+import com.pryv.ihealth.android.utils.MyLog;
 
 /**
  * Activity for scan and connect available iHealth devices.

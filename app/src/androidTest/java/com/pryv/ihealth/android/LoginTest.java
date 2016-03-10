@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic;
+package com.pryv.ihealth.android;
 
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import lsi.pryv.epfl.pryvironic.activities.LoginActivity;
+import com.pryv.ihealth.android.activities.LoginActivity;
 
 import static junit.framework.Assert.assertEquals;
 

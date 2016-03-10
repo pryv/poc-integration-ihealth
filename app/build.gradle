@@ -3,11 +3,9 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
-
     useLibrary 'org.apache.http.legacy'
-
     defaultConfig {
-        applicationId "lsi.pryv.epfl.pryvironic"
+        applicationId 'com.pryv.ihealth'
         minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
@@ -20,7 +18,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -29,6 +26,8 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/SERVICES'
         exclude 'META-INF/services/com.fasterxml.jackson.core.JsonFactory'
+    }
+    productFlavors {
     }
 }
 

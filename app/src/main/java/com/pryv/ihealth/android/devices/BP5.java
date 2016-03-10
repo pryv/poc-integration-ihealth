@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic.devices;
+package com.pryv.ihealth.android.devices;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,8 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import lsi.pryv.epfl.pryvironic.R;
-import lsi.pryv.epfl.pryvironic.utils.Connector;
+import com.pryv.ihealth.android.R;
+import com.pryv.ihealth.android.utils.Connector;
 
 /**
  * Activity for testing Bp5 device.

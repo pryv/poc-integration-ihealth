@@ -1,4 +1,4 @@
-package lsi.pryv.epfl.pryvironic.activities;
+package com.pryv.ihealth.android.activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -20,7 +20,7 @@ import com.pryv.auth.AuthView;
 
 import java.util.ArrayList;
 
-import lsi.pryv.epfl.pryvironic.R;
+import com.pryv.ihealth.android.R;
 
 public class LoginActivity extends AppCompatActivity {
 
