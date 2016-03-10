@@ -23,7 +23,7 @@ import lsi.pryv.epfl.pryvironic.R;
 import lsi.pryv.epfl.pryvironic.utils.Connector;
 import lsi.pryv.epfl.pryvironic.utils.MyLog;
 
-public class AM3S extends Activity implements OnClickListener{
+public class AM3S extends Activity {
 
     private static final String TAG = "AM3SActivity";
     private MyLog myLog;
@@ -49,19 +49,6 @@ public class AM3S extends Activity implements OnClickListener{
         this.mac = intent.getStringExtra("mac");
 
         am3sControl = iHealthDevicesManager.getInstance().getAm3sControl(this.mac);
-        //button
-        findViewById(R.id.btn_GetBattery).setOnClickListener(this);
-        findViewById(R.id.btn_GetUserId).setOnClickListener(this);
-        findViewById(R.id.btn_GetAlarmNum).setOnClickListener(this);
-        findViewById(R.id.btn_SyncStage).setOnClickListener(this);
-        findViewById(R.id.btn_SyncSleep).setOnClickListener(this);
-        findViewById(R.id.btn_SyncActivity).setOnClickListener(this);
-        findViewById(R.id.btn_SyncReal).setOnClickListener(this);
-        findViewById(R.id.btn_GetUserInfo).setOnClickListener(this);
-        findViewById(R.id.btn_GetAlarmInfo).setOnClickListener(this);
-        findViewById(R.id.btn_SetUserId).setOnClickListener(this);
-        findViewById(R.id.btn_SendRandom).setOnClickListener(this);
-        findViewById(R.id.btn_Disconnect).setOnClickListener(this);
         tv_return = (TextView)findViewById(R.id.tv_return);
     }
 
@@ -267,85 +254,88 @@ public class AM3S extends Activity implements OnClickListener{
         }
     };
 
-    @Override
-    public void onClick(View arg0) {
-        int id = arg0.getId();
-        switch (id) {
-            case R.id.btn_GetBattery:
-                if (am3sControl != null) {
-                    am3sControl.queryAMState();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_GetUserId:
-                if (am3sControl != null) {
-                    am3sControl.getUserId();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_GetAlarmNum:
-                if (am3sControl != null) {
-                    am3sControl.getAlarmClockNum();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_SyncStage:
-                if (am3sControl != null) {
-                    am3sControl.syncStageReprotData();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_SyncSleep:
-                if (am3sControl != null) {
-                    am3sControl.syncSleepData();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_SyncActivity:
-                if (am3sControl != null) {
-                    am3sControl.syncActivityData();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_SyncReal:
-                if (am3sControl != null) {
-                    am3sControl.syncRealData();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_GetUserInfo:
-                if (am3sControl != null) {
-                    am3sControl.getUserInfo();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_GetAlarmInfo:
-                if (am3sControl != null) {
-                    am3sControl.checkAlarmClock(1);
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_SetUserId:
-                if (am3sControl != null) {
-                    am3sControl.setUserId(1);
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_SendRandom:
-                if (am3sControl != null) {
-                    am3sControl.sendRandom();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btn_Disconnect:
-                if (am3sControl != null) {
-                    am3sControl.disconnect();
-                }else
-                    Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
-                break;
-            default:
-                break;
-        }
+    public void getBattery(View v) {
+        if (am3sControl != null) {
+            am3sControl.queryAMState();
+        } else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void getUserId(View v) {
+        if (am3sControl != null) {
+            am3sControl.getUserId();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void getAlarmNum(View v) {
+        if (am3sControl != null) {
+            am3sControl.getAlarmClockNum();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void syncStage(View v) {
+        if (am3sControl != null) {
+            am3sControl.syncStageReprotData();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void syncSleep(View v) {
+        if (am3sControl != null) {
+            am3sControl.syncSleepData();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void syncActivity(View v) {
+        if (am3sControl != null) {
+            am3sControl.syncActivityData();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void syncReal(View v) {
+        if (am3sControl != null) {
+            am3sControl.syncRealData();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void getUserInfo(View v) {
+        if (am3sControl != null) {
+            am3sControl.getUserInfo();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void getAlarmInfo(View v) {
+        if (am3sControl != null) {
+            am3sControl.checkAlarmClock(1);
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void setUserId(View v) {
+        if (am3sControl != null) {
+            am3sControl.setUserId(1);
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void sendRandom(View v) {
+        if (am3sControl != null) {
+            am3sControl.sendRandom();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
+    }
+
+    public void disconnect(View v) {
+        if (am3sControl != null) {
+            am3sControl.disconnect();
+        }else
+            Toast.makeText(this, "am3sControl == null", Toast.LENGTH_LONG).show();
     }
 
     private static final int HANDLER_MESSAGE = 101;

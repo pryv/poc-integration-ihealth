@@ -26,7 +26,7 @@ import lsi.pryv.epfl.pryvironic.utils.Connector;
 /**
  * Activity for testing Bp5 device.
  */
-public class BP5 extends Activity implements OnClickListener{
+public class BP5 extends Activity {
 
     private static final String TAG = "Bp5";
     private Bp5Control bp5Control;
@@ -43,13 +43,6 @@ public class BP5 extends Activity implements OnClickListener{
 
         Intent intent = getIntent();
         deviceMac = intent.getStringExtra("mac");
-        findViewById(R.id.btn_getbattery).setOnClickListener(this);
-        findViewById(R.id.btn_isOfflineMeasure).setOnClickListener(this);
-        findViewById(R.id.btn_enableOfflineMeasure).setOnClickListener(this);
-        findViewById(R.id.btn_disableOfflineMeasure).setOnClickListener(this);
-        findViewById(R.id.btn_startMeasure).setOnClickListener(this);
-        findViewById(R.id.btn_stopMeasure).setOnClickListener(this);
-        findViewById(R.id.btn_disconnect).setOnClickListener(this);
         tv_return = (TextView)findViewById(R.id.tv_return);
 
         clientCallbackId = iHealthDevicesManager.getInstance().registerClientCallback(iHealthDevicesCallback);
@@ -243,60 +236,53 @@ public class BP5 extends Activity implements OnClickListener{
         }
     };
 
-    @Override
-    public void onClick(View arg0) {
-        switch (arg0.getId()) {
-            case R.id.btn_getbattery:
-                if(bp5Control != null)
-                    bp5Control.getBattery();
-                else
-                    Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-                break;
+    public void getBattery(View v) {
+        if(bp5Control != null)
+            bp5Control.getBattery();
+        else
+            Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+    }
 
-            case R.id.btn_isOfflineMeasure:
-                if(bp5Control != null)
-                    bp5Control.isEnableOffline();
-                else
-                    Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-                break;
+    public void isOfflineMeasure(View v) {
+        if(bp5Control != null)
+            bp5Control.isEnableOffline();
+        else
+            Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+    }
 
-            case R.id.btn_enableOfflineMeasure:
-                if(bp5Control != null)
-                    bp5Control.enbleOffline();
-                else
-                    Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-                break;
+    public void enableOfflineMeasure(View v) {
+        if(bp5Control != null)
+            bp5Control.enbleOffline();
+        else
+            Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+    }
 
-            case R.id.btn_disableOfflineMeasure:
-                if(bp5Control != null)
-                    bp5Control.disableOffline();
-                else
-                    Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-                break;
+    public void disableOfflineMeasure(View v) {
+        if(bp5Control != null)
+            bp5Control.disableOffline();
+        else
+            Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+    }
 
-            case R.id.btn_startMeasure:
-                if(bp5Control != null)
-                    bp5Control.startMeasure();
-                else
-                    Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-                break;
+    public void startMeasure(View v) {
+        if(bp5Control != null)
+            bp5Control.startMeasure();
+        else
+            Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+    }
 
-            case R.id.btn_stopMeasure:
-                if(bp5Control != null)
-                    bp5Control.interruptMeasure();
-                else
-                    Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-                break;
+    public void stopMeasure(View v) {
+        if(bp5Control != null)
+            bp5Control.interruptMeasure();
+        else
+            Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+    }
 
-            case R.id.btn_disconnect:
-                if(bp5Control != null)
-                    bp5Control.disconnect();
-                else
-                    Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-                break;
-            default:
-                break;
-        }
+    public void disconnect(View v) {
+        if(bp5Control != null)
+            bp5Control.disconnect();
+        else
+            Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
     }
 
     private static final int HANDLER_MESSAGE = 101;

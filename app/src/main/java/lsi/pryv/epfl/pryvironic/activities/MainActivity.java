@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -19,8 +18,6 @@ import android.widget.Toast;
 
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
-import com.pryv.api.model.Event;
-import com.pryv.api.model.Stream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,13 +27,12 @@ import java.util.List;
 import lsi.pryv.epfl.pryvironic.R;
 import lsi.pryv.epfl.pryvironic.devices.AM3S;
 import lsi.pryv.epfl.pryvironic.devices.BP5;
-import lsi.pryv.epfl.pryvironic.utils.Connector;
 import lsi.pryv.epfl.pryvironic.utils.MyLog;
 
 /**
  * Activity for scan and connect available iHealth devices.
  */
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
     private MyLog myLog;
@@ -162,47 +158,33 @@ public class MainActivity extends Activity implements OnClickListener {
     String clientId = "2a8387e3f4e94407a3a767a72dfd52ea";
     String clientSecret = "fd5e845c47944a818bc511fb7edb0a77";
 
-    @Override
-    public void onClick(View arg0) {
-        int type;
-        switch (arg0.getId()) {
-            case R.id.btn_discorvery_am3s:
-                type = iHealthDevicesManager.DISCOVERY_AM3S;
-                /*
-                 * discovery iHealth devices, This method can specify only to search for the devices
-                 * that you want to connect
-                 */
-                list_ScanDevices.clear();
-                updateViewForScan();
-                iHealthDevicesManager.getInstance().startDiscovery(type);
-                tv_discovery.setText("discovering...");
-                break;
+    // Onclick button Discovery AM3S
+    public void am3sDiscovery(View v) {
+        int type = iHealthDevicesManager.DISCOVERY_AM3S;
+        list_ScanDevices.clear();
+        updateViewForScan();
+        iHealthDevicesManager.getInstance().startDiscovery(type);
+        tv_discovery.setText("discovering AM3S...");
+    }
 
-            case R.id.btn_discorvery_bp5:
-                type = iHealthDevicesManager.DISCOVERY_BP5;
-                /*
-                 * discovery iHealth devices, This method can specify only to search for the devices
-                 * that you want to connect
-                 */
-                list_ScanDevices.clear();
-                updateViewForScan();
-                iHealthDevicesManager.getInstance().startDiscovery(type);
-                tv_discovery.setText("discovering...");
-                break;
+    // Onclick button Discovery BP5
+    public void bp5Discovery(View v) {
+        int type = iHealthDevicesManager.DISCOVERY_BP5;
+        list_ScanDevices.clear();
+        updateViewForScan();
+        iHealthDevicesManager.getInstance().startDiscovery(type);
+        tv_discovery.setText("discovering BP5...");
+    }
 
-            case R.id.btn_stopdiscorvery:
-                /* stop discovery iHealth devices */
-                iHealthDevicesManager.getInstance().stopDiscovery();
-                break;
+    // Onclick button Stop Discovery
+    public void stopDiscovery(View v) {
+        iHealthDevicesManager.getInstance().stopDiscovery();
+    }
 
-            case R.id.btn_Certification:
-                iHealthDevicesManager.getInstance().sdkUserInAuthor(MainActivity.this, userName, clientId,
-                        clientSecret, callbackId);
-                break;
-
-            default:
-                break;
-        }
+    // // Onclick button Certification
+    public void certification(View v) {
+        iHealthDevicesManager.getInstance().sdkUserInAuthor(MainActivity.this, userName, clientId,
+                clientSecret, callbackId);
     }
 
     private static final int HANDLER_SCAN = 101;
@@ -335,7 +317,6 @@ public class MainActivity extends Activity implements OnClickListener {
                 if (iHealthDevicesManager.TYPE_AM3.equals(type)) {
                     intent.setClass(MainActivity.this, AM3S.class);
                     startActivity(intent);
-
                 } else if (iHealthDevicesManager.TYPE_BP5.equals(type)) {
                     intent.setClass(MainActivity.this, BP5.class);
                     startActivity(intent);

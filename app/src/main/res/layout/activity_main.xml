@@ -16,24 +16,28 @@
         android:id="@+id/btn_discorvery_bp5"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:onClick="bp5Discovery"
         android:text="Discovery BP5 Device" />
 
     <Button
         android:id="@+id/btn_discorvery_am3s"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:onClick="am3sDiscovery"
         android:text="Discovery AM3S Device" />
 
     <Button
         android:id="@+id/btn_stopdiscorvery"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:onClick="stopDiscovery"
         android:text="Stop Discovery" />
 
     <Button
         android:id="@+id/btn_Certification"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:onClick="certification"
         android:text="Certification" />
 
     <TextView
