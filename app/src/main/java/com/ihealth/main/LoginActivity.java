@@ -14,7 +14,7 @@ import android.util.Base64;
 import android.view.View;
 import android.webkit.WebView;
 
-import com.example.devicelibtest.R;
+import com.ihealth.R;
 import com.pryv.Pryv;
 import com.pryv.api.model.Permission;
 import com.pryv.auth.AuthController;

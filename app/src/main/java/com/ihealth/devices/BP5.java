@@ -3,7 +3,7 @@ package com.ihealth.devices;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.example.devicelibtest.R;
+import com.ihealth.R;
 import com.ihealth.communication.control.Bp5Control;
 import com.ihealth.communication.control.BpProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;

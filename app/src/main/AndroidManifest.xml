@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.devicelibtest"
+    package="com.ihealth"
     android:versionCode="1"
     android:versionName="1.0">
 
@@ -28,73 +28,20 @@
         <activity
             android:name="com.ihealth.main.LoginActivity"
             android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name="com.ihealth.devices.BP5"
+            android:label="@string/title_activity_bp5"></activity>
+        <activity
+            android:name="com.ihealth.devices.AM3S"
+            android:label="@string/title_activity_am3_s"></activity>
+        <activity android:name="com.ihealth.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.ihealth.devices.BP5"
-            android:label="@string/title_activity_bp5"></activity>
-        <activity
-            android:name="com.ihealth.devices.BP7"
-            android:label="@string/title_activity_bp7"></activity>
-        <activity
-            android:name="com.ihealth.devices.BP3L"
-            android:label="@string/title_activity_bp3_l"></activity>
-        <activity
-            android:name="com.ihealth.devices.BP3M"
-            android:label="@string/title_activity_bp3_m"></activity>
-        <activity
-            android:name="com.ihealth.devices.HS5BT"
-            android:label="@string/title_activity_hs5_bt"></activity>
-        <activity
-            android:name="com.ihealth.devices.HS5wifi"
-            android:label="@string/title_activity_hs5_wifi"></activity>
-        <activity
-            android:name="com.ihealth.devices.HS3"
-            android:label="@string/title_activity_hs3"></activity>
-        <activity
-            android:name="com.ihealth.devices.HS4"
-            android:label="@string/title_activity_hs4"></activity>
-        <activity
-            android:name="com.ihealth.devices.HS4S"
-            android:label="@string/title_activity_hs4s"></activity>
-        <activity
-            android:name="com.ihealth.devices.Po3"
-            android:label="@string/title_activity_po"></activity>
-        <activity
-            android:name="com.ihealth.devices.BG5"
-            android:label="@string/title_activity_bg5"></activity>
-        <activity
-            android:name="com.ihealth.devices.BG1"
-            android:label="@string/title_activity_bg1"></activity>
-        <activity
-            android:name="com.ihealth.devices.ABI"
-            android:label="@string/title_activity_abi"></activity>
-        <activity
-            android:name="com.ihealth.devices.HS6"
-            android:label="@string/title_activity_abi"></activity>
-        <activity
-            android:name="com.ihealth.devices.AM3"
-            android:label="@string/title_activity_am3"></activity>
-        <activity
-            android:name="com.ihealth.devices.AM3S"
-            android:label="@string/title_activity_am3s"></activity>
-        <activity
-            android:name="com.ihealth.devices.AM4"
-            android:label="@string/title_activity_am4"></activity>
-        <activity
-            android:name="com.ihealth.devices.Bp7s"
-            android:label="@string/title_activity_bp7s"></activity>
-        <activity
-            android:name="com.ihealth.devices.Bp550BT"
-            android:label="@string/title_activity_bp550_bt"></activity>
-        <activity
-            android:name="com.ihealth.devices.Bp926"
-            android:label="@string/title_activity_bp926"></activity>
-        <activity android:name="com.ihealth.main.MainActivity"></activity>
     </application>
 
 </manifest>

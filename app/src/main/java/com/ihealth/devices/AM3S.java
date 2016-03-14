@@ -1,18 +1,5 @@
 package com.ihealth.devices;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.example.devicelibtest.R;
-import com.ihealth.communication.control.Am3sControl;
-import com.ihealth.communication.control.AmProfile;
-import com.ihealth.communication.control.BpProfile;
-import com.ihealth.communication.manager.iHealthDevicesCallback;
-import com.ihealth.communication.manager.iHealthDevicesManager;
-import com.ihealth.utils.Connector;
-import com.ihealth.utils.MyLog;
-import com.pryv.api.model.Stream;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,10 +10,20 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ihealth.R;
+import com.ihealth.communication.control.Am3sControl;
+import com.ihealth.communication.control.AmProfile;
+import com.ihealth.communication.manager.iHealthDevicesCallback;
+import com.ihealth.communication.manager.iHealthDevicesManager;
+import com.ihealth.utils.Connector;
+import com.pryv.api.model.Stream;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AM3S extends Activity implements OnClickListener{
 
 	private static final String TAG = "AM3SActivity";
-	private MyLog myLog;
 	
 	private Am3sControl am3sControl;
 	private String mac;
@@ -36,7 +33,6 @@ public class AM3S extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_am3_s);
-		myLog = new MyLog(TAG);
 
 		Connector.initiateConnection();
 
@@ -84,11 +80,6 @@ public class AM3S extends Activity implements OnClickListener{
 
 		@Override
 		public void onDeviceNotify(String mac, String deviceType, String action, String message) {
-			myLog.i(action);
-			if (message != null) {
-				myLog.i(message);
-			}
-
 			Stream s = Connector.saveStream(action,"AM3S "+action);
 			Connector.saveEvent(s.getId(), "note/txt", message);
 

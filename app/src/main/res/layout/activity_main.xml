@@ -4,76 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.helloworld.MainActivity" >
-
-    <TextView 
-        android:id="@+id/tv_discovery"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
     
     <Button
         android:id="@+id/btn_discoveryAM3S"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Discovery AM3S Device" />
+        android:text="Discovery AM3S Device"
+        android:onClick="discoveryAM3S"/>
 
     <Button
         android:id="@+id/btn_discoveryBP5"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Discovery BP5 Device" />
-
-    <Button
-        android:id="@+id/btn_stopdiscovery"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Stop Discovery" />
-
-    <Button
-        android:id="@+id/btn_Certification"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Certification" />
-
-    <!--
-    <Button
-        android:id="@+id/btn_GotoBG1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="GotoBG1" />
-
-    <Button
-        android:id="@+id/btn_GotoABI"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="GotoABI" />
-
-    <Button
-        android:id="@+id/btn_GotoHS6"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="GotoHS6" />
-        -->
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:text="Device Scan"
-        android:textSize="20sp" />
-
-    <ListView
-        android:id="@+id/list_scan"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:text="Device Connected"
-        android:textSize="20sp" />
-
-    <ListView
-        android:id="@+id/list_connected"
-        android:layout_width="fill_parent"
-        android:layout_height="600dp" />
+        android:text="Discovery BP5 Device"
+        android:onClick="discoveryBP5"/>
 
 </LinearLayout>
