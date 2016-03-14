@@ -3,10 +3,12 @@ package com.ihealth.main;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.ihealth.R;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
@@ -22,6 +24,8 @@ public class MainActivity extends Activity {
     private Class selectedDeviceClass;
     private String selectedDeviceType;
     private ProgressDialog progressDialog;
+    private final static int BLUETOOTH_ENABLED = 1;
+    private boolean bluetoothReady = false;
 
     /*
      * Example creditentials
@@ -35,8 +39,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        checkBluetooth();
+
         progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.setMessage("Discovery...");
         progressDialog.setCancelable(true);
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
@@ -108,10 +113,39 @@ public class MainActivity extends Activity {
         discover(iHealthDevicesManager.TYPE_BP5, BP5.class, iHealthDevicesManager.DISCOVERY_BP5);
     }
 
+    private void checkBluetooth() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            progressDialog.setMessage("Your device does not support Bluetooth!");
+            progressDialog.show();
+        } else if (!bluetoothAdapter.isEnabled()) {
+            // Bluetooth is not enable
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent,BLUETOOTH_ENABLED);
+        } else {
+            bluetoothReady = true;
+        }
+    }
+
     private void discover(String type, Class className, int discoverType) {
-        progressDialog.show();
-        selectedDeviceType = type;
-        selectedDeviceClass = className;
-        iHealthDevicesManager.getInstance().startDiscovery(discoverType);
+        if(bluetoothReady) {
+            progressDialog.setMessage("Discovery...");
+            progressDialog.show();
+            selectedDeviceType = type;
+            selectedDeviceClass = className;
+            iHealthDevicesManager.getInstance().startDiscovery(discoverType);
+        } else {
+            Toast.makeText(this,"Bluetooth is not ready!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+        @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == BLUETOOTH_ENABLED) {
+            // Make sure the request was successful
+            bluetoothReady = (resultCode == RESULT_OK);
+        }
     }
 }

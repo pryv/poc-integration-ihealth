@@ -1,8 +1,11 @@
 package com.ihealth.devices;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
 import com.ihealth.R;
 import com.ihealth.communication.control.Bp5Control;
 import com.ihealth.communication.control.BpProfile;
@@ -11,27 +14,17 @@ import com.ihealth.communication.manager.iHealthDevicesManager;
 import com.ihealth.utils.Connector;
 import com.pryv.api.model.Stream;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.TextView;
-import android.widget.Toast;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Activity for testing Bp5 device. 
  */
-public class BP5 extends Activity implements OnClickListener{
-
-	private static final String TAG = "Bp5";
+public class BP5 extends Activity {
 	private Bp5Control bp5Control;
 	private String deviceMac;
 	private int clientCallbackId;
-	private TextView tv_return;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +34,7 @@ public class BP5 extends Activity implements OnClickListener{
 		Connector.initiateConnection();
 
 		Intent intent = getIntent();
-		deviceMac = intent.getStringExtra("mac"); 
-		findViewById(R.id.btn_getbattery).setOnClickListener(this);
-		findViewById(R.id.btn_isOfflineMeasure).setOnClickListener(this);
-		findViewById(R.id.btn_enableOfflineMeasure).setOnClickListener(this);
-		findViewById(R.id.btn_disableOfflineMeasure).setOnClickListener(this);
-		findViewById(R.id.btn_startMeasure).setOnClickListener(this);
-		findViewById(R.id.btn_stopMeasure).setOnClickListener(this);
-		findViewById(R.id.btn_disconnect).setOnClickListener(this);
-		tv_return = (TextView)findViewById(R.id.tv_return);
+		deviceMac = intent.getStringExtra("mac");
 		
 		clientCallbackId = iHealthDevicesManager.getInstance().registerClientCallback(iHealthDevicesCallback);
 		/* Limited wants to receive notification specified device */
@@ -60,39 +45,35 @@ public class BP5 extends Activity implements OnClickListener{
 
 	@Override
 	protected void onDestroy() {
+		reset();
 		super.onDestroy();
+	}
+
+	@Override
+	public void onBackPressed() {
+		reset();
+		super.onBackPressed();
+	}
+
+	private void reset() {
+		if(bp5Control != null)
+			bp5Control.disconnect();
 		iHealthDevicesManager.getInstance().unRegisterClientCallback(clientCallbackId);
 	}
 
 	private iHealthDevicesCallback iHealthDevicesCallback = new iHealthDevicesCallback() {
 
 		@Override
-		public void onScanDevice(String mac, String deviceType) {
-			Log.i(TAG, "mac: " + mac);
-			Log.i(TAG, "deviceType: " + deviceType);
-		}
+		public void onScanDevice(String mac, String deviceType) {}
 
 		@Override
-		public void onDeviceConnectionStateChange(String mac,
-				String deviceType, int status) {
-			Log.i(TAG, "mac: " + mac);
-			Log.i(TAG, "deviceType: " + deviceType);
-			Log.i(TAG, "status: " + status);
-		}
+		public void onDeviceConnectionStateChange(String mac, String deviceType, int status) {}
 
 		@Override
-		public void onUserStatus(String username, int userStatus) {
-			Log.i(TAG, "username: " + username);
-			Log.i(TAG, "userState: " + userStatus);
-		}
+		public void onUserStatus(String username, int userStatus) {}
 
 		@Override
-		public void onDeviceNotify(String mac, String deviceType,
-				String action, String message) {
-			Log.i(TAG, "mac: " + mac);
-			Log.i(TAG, "deviceType: " + deviceType);
-			Log.i(TAG, "action: " + action);
-			Log.i(TAG, "message: " + message);
+		public void onDeviceNotify(String mac, String deviceType, String action, String message) {
 
 			Stream s = Connector.saveStream(action,"BP5 "+action);
 			Connector.saveEvent(s.getId(), "note/txt", message);
@@ -100,30 +81,20 @@ public class BP5 extends Activity implements OnClickListener{
 			if(BpProfile.ACTION_BATTERY_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
-					String battery =info.getString(BpProfile.BATTERY_BP);
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj = "battery: " + battery;
-					myHandler.sendMessage(msg);
+					String battery = info.getString(BpProfile.BATTERY_BP);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				
-				
 			}else if(BpProfile.ACTION_DISENABLE_OFFLINE_BP.equals(action)){
-				Log.i(TAG, "disable operation is success");
-				
+
 			}else if(BpProfile.ACTION_ENABLE_OFFLINE_BP.equals(action)){
-				Log.i(TAG, "enable operation is success");
-				
+
 			}else if(BpProfile.ACTION_ERROR_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
-					String num =info.getString(BpProfile.ERROR_NUM_BP);
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj = "error num: " + num;
-					myHandler.sendMessage(msg);
+					String num = info.getString(BpProfile.ERROR_NUM_BP);
+
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -150,10 +121,6 @@ public class BP5 extends Activity implements OnClickListener{
 			            			+ "hsd:" + hsd + "\n";
 			            }
 			        }
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj =  str;
-					myHandler.sendMessage(msg);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -162,10 +129,6 @@ public class BP5 extends Activity implements OnClickListener{
 				try {
 					JSONObject info = new JSONObject(message);
 					String num = info.getString(BpProfile.HISTORICAL_NUM_BP);
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj = "num: " + num;
-					myHandler.sendMessage(msg);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -174,10 +137,6 @@ public class BP5 extends Activity implements OnClickListener{
 				try {
 					JSONObject info = new JSONObject(message);
 					String isEnableoffline =info.getString(BpProfile.IS_ENABLE_OFFLINE);
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj = "isEnableoffline: " + isEnableoffline;
-					myHandler.sendMessage(msg);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -186,10 +145,6 @@ public class BP5 extends Activity implements OnClickListener{
 				try {
 					JSONObject info = new JSONObject(message);
 					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj = "pressure: " + pressure;
-					myHandler.sendMessage(msg);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -200,12 +155,6 @@ public class BP5 extends Activity implements OnClickListener{
 					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
 					String wave = info.getString(BpProfile.PULSEWAVE_BP);
 					String heartbeat = info.getString(BpProfile.FLAG_HEARTBEAT_BP);
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj = "pressure:" + pressure + "\n"
-							+ "wave: " + wave + "\n"
-							+ " - heartbeat:" + heartbeat;
-					myHandler.sendMessage(msg);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -217,98 +166,59 @@ public class BP5 extends Activity implements OnClickListener{
 					String lowPressure =info.getString(BpProfile.LOW_BLOOD_PRESSURE_BP);
 					String ahr =info.getString(BpProfile.MEASUREMENT_AHR_BP);
 					String pulse =info.getString(BpProfile.PULSE_BP);
-					Message msg = new Message();
-					msg.what = HANDLER_MESSAGE;
-					msg.obj = "highPressure: " + highPressure 
-							+ "lowPressure: " + lowPressure
-							+ "ahr: " + ahr
-							+ "pulse: " + pulse;
-					myHandler.sendMessage(msg);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				
 			}else if(BpProfile.ACTION_ZOREING_BP.equals(action)){
-				Message msg = new Message();
-				msg.what = HANDLER_MESSAGE;
-				msg.obj = "zoreing";
-				myHandler.sendMessage(msg);
+				String obj = "zoreing";
 				
 			}else if(BpProfile.ACTION_ZOREOVER_BP.equals(action)){
-				Message msg = new Message();
-				msg.what = HANDLER_MESSAGE;
-				msg.obj = "zoreover";
-				myHandler.sendMessage(msg);
+				String obj = "zoreover";
 
 			}
 		}
 	};
-	
-	@Override
-	public void onClick(View arg0) {
-		switch (arg0.getId()) {
-		case R.id.btn_getbattery:
-			if(bp5Control != null)
-				bp5Control.getBattery();
-			else
-				Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-			break;
-			
-		case R.id.btn_isOfflineMeasure:
-			if(bp5Control != null)
-				bp5Control.isEnableOffline();
-			else
-				Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();				
-			break;
-			
-		case R.id.btn_enableOfflineMeasure:
-			if(bp5Control != null)
-				bp5Control.enbleOffline();
-			else
-				Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-			break;
-			
-		case R.id.btn_disableOfflineMeasure:
-			if(bp5Control != null)
-				bp5Control.disableOffline();
-			else
-				Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-			break;
-			
-		case R.id.btn_startMeasure:
-			if(bp5Control != null)
-				bp5Control.startMeasure();
-			else
-				Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-			break;
-		
-		case R.id.btn_stopMeasure:
-			if(bp5Control != null)
-				bp5Control.interruptMeasure();
-			else
-				Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-			break;
-			
-		case R.id.btn_disconnect:
-			if(bp5Control != null)
-				bp5Control.disconnect();
-			else
-				Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
-			break;
-		default:
-			break;
-		}
+
+	public void getBattery(View v) {
+		if(bp5Control != null)
+			bp5Control.getBattery();
+		else
+			Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
 	}
-	
-	private static final int HANDLER_MESSAGE = 101;
-	Handler myHandler = new Handler() {  
-        public void handleMessage(Message msg) {   
-             switch (msg.what) {   
-                  case HANDLER_MESSAGE:   
-                       tv_return.setText((String)msg.obj);  
-                       break;   
-             }   
-             super.handleMessage(msg);   
-        }   
-   };
+
+	public void isOfflineMeasure(View v) {
+		if (bp5Control != null)
+			bp5Control.isEnableOffline();
+		else
+			Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+	}
+
+	public void enableOfflineMeasure(View v) {
+		if(bp5Control != null)
+			bp5Control.enbleOffline();
+		else
+			Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+	}
+
+	public void disableOfflineMeasure(View v) {
+		if (bp5Control != null)
+			bp5Control.disableOffline();
+		else
+			Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+	}
+
+	public void startMeasure(View v) {
+		if(bp5Control != null)
+			bp5Control.startMeasure();
+		else
+			Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+	}
+
+	public void stopMeasure(View v) {
+		if(bp5Control != null)
+			bp5Control.interruptMeasure();
+		else
+			Toast.makeText(BP5.this, "bp5Control == null", Toast.LENGTH_LONG).show();
+	}
 }

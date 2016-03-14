@@ -80,6 +80,7 @@ public class AM3S extends Activity implements OnClickListener{
 
 		@Override
 		public void onDeviceNotify(String mac, String deviceType, String action, String message) {
+
 			Stream s = Connector.saveStream(action,"AM3S "+action);
 			Connector.saveEvent(s.getId(), "note/txt", message);
 
@@ -297,16 +298,16 @@ public class AM3S extends Activity implements OnClickListener{
 			break;
 		}
 	}
-	
+
 	private static final int HANDLER_MESSAGE = 101;
-	Handler myHandler = new Handler() {  
-        public void handleMessage(Message msg) {   
-             switch (msg.what) {   
-                  case HANDLER_MESSAGE:   
-                       tv_return.setText((String)msg.obj);  
-                       break;   
-             }   
-             super.handleMessage(msg);   
-        }   
+	Handler myHandler = new Handler() {
+        public void handleMessage(Message msg) {
+             switch (msg.what) {
+                  case HANDLER_MESSAGE:
+                       tv_return.setText((String)msg.obj);
+                       break;
+             }
+             super.handleMessage(msg);
+        }
    };
 }

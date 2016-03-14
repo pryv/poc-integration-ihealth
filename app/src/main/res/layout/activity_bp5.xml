@@ -8,47 +8,42 @@
         android:id="@+id/btn_getbattery"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="Getbattery" />
+        android:text="Getbattery"
+        android:onClick="getBattery"/>
 
     <Button
         android:id="@+id/btn_isOfflineMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="IsOfflineMeasure" />
+        android:text="IsOfflineMeasure"
+        android:onClick="isOfflineMeasure"/>
 
     <Button
         android:id="@+id/btn_enableOfflineMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="EnableOfflineMeasure" />
+        android:text="EnableOfflineMeasure"
+        android:onClick="enableOfflineMeasure"/>
 
     <Button
         android:id="@+id/btn_disableOfflineMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="DisableOfflineMeasure" />
+        android:text="DisableOfflineMeasure"
+        android:onClick="disableOfflineMeasure"/>
 
     <Button
         android:id="@+id/btn_startMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="StartMeasure" />
+        android:text="StartMeasure"
+        android:onClick="startMeasure"/>
 
     <Button
         android:id="@+id/btn_stopMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="StopMeasure" />
-
-    <Button
-        android:id="@+id/btn_disconnect"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:text="Disconnect" />
-
-    <TextView
-        android:id="@+id/tv_return"
-        android:layout_width="fill_parent"
-        android:layout_height="150dp" />
+        android:text="StopMeasure"
+        android:onClick="stopMeasure"/>
 
 </LinearLayout>
