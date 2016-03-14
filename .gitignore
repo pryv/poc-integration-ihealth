@@ -93,4 +93,4 @@ build/
 
 #NDK
 obj/
-java-lib/
+lib-java/
