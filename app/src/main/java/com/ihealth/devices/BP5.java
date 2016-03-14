@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ihealth.R;
@@ -25,6 +26,7 @@ public class BP5 extends Activity {
 	private Bp5Control bp5Control;
 	private String deviceMac;
 	private int clientCallbackId;
+	private TextView tv_return;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,8 @@ public class BP5 extends Activity {
 		iHealthDevicesManager.getInstance().addCallbackFilterForDeviceType(clientCallbackId, iHealthDevicesManager.TYPE_BP5);
 		/* Get bp5 controller */
 		bp5Control = iHealthDevicesManager.getInstance().getBp5Control(deviceMac);
+
+		tv_return = (TextView)findViewById(R.id.tv_return);
 	}
 
 	@Override

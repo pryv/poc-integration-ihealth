@@ -46,4 +46,9 @@
         android:text="StopMeasure"
         android:onClick="stopMeasure"/>
 
+    <TextView
+        android:id="@+id/tv_return"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp" />
+
 </LinearLayout>
