@@ -7,38 +7,52 @@
 
     <TextView 
         android:id="@+id/tv_discovery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Click on discovery"
-        android:layout_gravity="center_horizontal" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
     
     <Button
-        android:id="@+id/btn_discorvery_bp5"
+        android:id="@+id/btn_discoveryAM3S"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="bp5Discovery"
-        android:text="Discovery BP5 Device" />
-
-    <Button
-        android:id="@+id/btn_discorvery_am3s"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:onClick="am3sDiscovery"
         android:text="Discovery AM3S Device" />
 
     <Button
-        android:id="@+id/btn_stopdiscorvery"
+        android:id="@+id/btn_discoveryBP5"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="stopDiscovery"
+        android:text="Discovery BP5 Device" />
+
+    <Button
+        android:id="@+id/btn_stopdiscovery"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:text="Stop Discovery" />
 
     <Button
         android:id="@+id/btn_Certification"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="certification"
         android:text="Certification" />
+
+    <!--
+    <Button
+        android:id="@+id/btn_GotoBG1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="GotoBG1" />
+
+    <Button
+        android:id="@+id/btn_GotoABI"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="GotoABI" />
+
+    <Button
+        android:id="@+id/btn_GotoHS6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="GotoHS6" />
+        -->
 
     <TextView
         android:layout_width="fill_parent"

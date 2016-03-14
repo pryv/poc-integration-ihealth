@@ -1,7 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical" >
 
     <Button
@@ -11,34 +10,22 @@
         android:text="Getbattery" />
 
     <Button
-        android:id="@+id/btn_isOfflineMeasure"
+        android:id="@+id/btn_getOfflineNum"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="IsOfflineMeasure" />
+        android:text="getOfflineNum" />
 
     <Button
-        android:id="@+id/btn_enableOfflineMeasure"
+        android:id="@+id/btn_getOffineData"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="EnableOfflineMeasure" />
-
+        android:text="getOffineData" />
+    
     <Button
-        android:id="@+id/btn_disableOfflineMeasure"
+        android:id="@+id/btn_SyncTime"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:text="DisableOfflineMeasure" />
-
-    <Button
-        android:id="@+id/btn_startMeasure"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:text="StartMeasure" />
-
-    <Button
-        android:id="@+id/btn_stopMeasure"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:text="StopMeasure" />
+        android:text="SyncTime" />
 
     <Button
         android:id="@+id/btn_disconnect"

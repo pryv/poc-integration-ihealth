@@ -23,10 +23,10 @@
         android:text="getAlarnNum" />
     
     <Button
-        android:id="@+id/btn_SyncStage"
+        android:id="@+id/btn_SetAlarm"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
-        android:text="syncStage" />
+        android:text="setAlarm" />
     
     <Button
         android:id="@+id/btn_SyncSleep"
@@ -53,6 +53,12 @@
         android:text="getUserInfo" />
     
     <Button
+        android:id="@+id/btn_SetUserInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:text="setUserInfo" />
+    
+    <Button
         android:id="@+id/btn_GetAlarmInfo"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
@@ -65,16 +71,16 @@
         android:text="setUserId" />
     
    <Button
-        android:id="@+id/btn_SendRandom"
+        android:id="@+id/btn_reset"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
-        android:text="sendRandom" />  
+        android:text="reset" />  
         
    <Button
         android:id="@+id/btn_Disconnect"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
-        android:text="disconnect" /> 
+        android:text="disconnect" />  
 
     <TextView
         android:id="@+id/tv_return"

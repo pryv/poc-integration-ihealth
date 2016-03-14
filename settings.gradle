@@ -1,1 +1,1 @@
-include ':app', ':java-lib', ':iHealthLibrary_2.2.3', ':btle'
+include ':app', ':lib-java'
