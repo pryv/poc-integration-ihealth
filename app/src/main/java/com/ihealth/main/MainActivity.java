@@ -25,6 +25,7 @@ public class MainActivity extends Activity {
     private String selectedDeviceType;
     private ProgressDialog progressDialog;
     private final static int BLUETOOTH_ENABLED = 1;
+    private final static int DEVICE = 2;
     private boolean bluetoothReady = false;
 
     /*
@@ -85,11 +86,11 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDeviceConnectionStateChange(String mac, String deviceType, int status) {
-            if (selectedDeviceType.equals(deviceType)) {
+            if (selectedDeviceType.equals(deviceType) && status==1) {
                 Intent intent = new Intent();
                 intent.putExtra("mac", mac);
                 intent.setClass(MainActivity.this, selectedDeviceClass);
-                startActivity(intent);
+                startActivityForResult(intent, DEVICE);
             }
         }
 
@@ -143,9 +144,15 @@ public class MainActivity extends Activity {
         @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == BLUETOOTH_ENABLED) {
-            // Make sure the request was successful
-            bluetoothReady = (resultCode == RESULT_OK);
-        }
+            switch(requestCode) {
+                case BLUETOOTH_ENABLED:
+                    // Make sure the request was successful
+                    bluetoothReady = (resultCode == RESULT_OK);
+                    break;
+                case DEVICE:
+                    if(resultCode==RESULT_CANCELED) {
+                        Toast.makeText(this,"Connection with device lost!",Toast.LENGTH_SHORT).show();
+                    }
+            }
     }
 }

@@ -30,6 +30,13 @@ public class Connector {
         instanciateECB();
     }
 
+    public static void saveEvent(String streamId, String type) {
+        Event event = new Event();
+        event.setStreamId(streamId);
+        event.setType(type);
+        connection.createEvent(event, eventsCallback);
+    }
+
     public static void saveEvent(String streamId, String type, String content) {
         Event event = new Event();
         event.setStreamId(streamId);
