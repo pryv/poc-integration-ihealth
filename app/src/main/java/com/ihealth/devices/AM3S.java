@@ -16,10 +16,16 @@ import com.ihealth.communication.control.AmProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
 import com.ihealth.utils.Connector;
+import com.pryv.api.StreamsCallback;
+import com.pryv.api.StreamsSupervisor;
 import com.pryv.api.model.Stream;
 
+import org.joda.time.field.PreciseDateTimeField;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Map;
 
 public class AM3S extends Activity {
     private Am3sControl am3sControl;
@@ -116,30 +122,58 @@ public class AM3S extends Activity {
                     break;
                 case AmProfile.ACTION_SYNC_STAGE_DATA_AM:
                     try {
-                        //TODO: JSON
+                        //TODO: time, activity with duration
                         JSONObject info = new JSONObject(message);
-                        String stage_info = info.getString(AmProfile.SYNC_STAGE_DATA_AM);
-                        saveAction("syncStage", "note/txt", stage_info);
+                        saveAction("syncStage", "note/txt", info.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     break;
                 case AmProfile.ACTION_SYNC_SLEEP_DATA_AM:
                     try {
-                        //TODO: JSON
+                        //TODO: time, activity with duration
                         JSONObject info = new JSONObject(message);
-                        String stage_info = info.getString(AmProfile.SYNC_SLEEP_DATA_AM);
-                        saveAction("syncSleep", "note/txt", stage_info);
+                        JSONArray sleep_info = info.getJSONArray(AmProfile.SYNC_SLEEP_DATA_AM);
+                        JSONArray activities = sleep_info.getJSONObject(0).getJSONArray(AmProfile.SYNC_SLEEP_EACH_DATA_AM);
+
+                        tv_return.setText("Sync " + activities.length() + " sleeps...");
+                        String streamID = "AM3S_syncSleeps";
+                        Stream s = Connector.saveStream(streamID, streamID);
+
+                        for(int i=0; i<activities.length(); i++) {
+                            JSONObject activity = activities.getJSONObject(i);
+                            String time = activity.getString(AmProfile.SYNC_SLEEP_DATA_TIME_AM);
+                            String level = activity.getString(AmProfile.SYNC_SLEEP_DATA_LEVEL_AM);
+                            Connector.saveEvent(s.getId(), "note/txt", time);
+                            Connector.saveEvent(s.getId(), "count/generic", level);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     break;
                 case AmProfile.ACTION_SYNC_ACTIVITY_DATA_AM:
                     try {
-                        //TODO: JSON
+                        //TODO: time, activity with duration
                         JSONObject info = new JSONObject(message);
-                        String activity_info = info.getString(AmProfile.SYNC_ACTIVITY_DATA_AM);
-                        saveAction("syncActivity", "note/txt", activity_info);
+                        JSONArray activity_info = info.getJSONArray(AmProfile.SYNC_ACTIVITY_DATA_AM);
+                        JSONArray activities = activity_info.getJSONObject(0).getJSONArray(AmProfile.SYNC_ACTIVITY_EACH_DATA_AM);
+
+                        tv_return.setText("Sync "+activities.length()+" activities...");
+                        String streamID = "AM3S_syncActivities";
+                        Stream s = Connector.saveStream(streamID, streamID);
+
+                        for(int i=0; i<activities.length(); i++) {
+                            JSONObject activity = activities.getJSONObject(i);
+                            String time = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_TIME_AM);
+                            String stepLength = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_STEP_LENGTH_AM);
+                            String steps = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_STEP_AM);
+                            String calories = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_CALORIE_AM);
+
+                            Connector.saveEvent(s.getId(), "note/txt", time);
+                            Connector.saveEvent(s.getId(), "time/min", stepLength);
+                            Connector.saveEvent(s.getId(), "count/steps", steps);
+                            Connector.saveEvent(s.getId(), "energy/cal", calories);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

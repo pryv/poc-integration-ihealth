@@ -7,6 +7,7 @@ import com.pryv.Connection;
 import com.pryv.Pryv;
 import com.pryv.api.EventsCallback;
 import com.pryv.api.StreamsCallback;
+import com.pryv.api.StreamsSupervisor;
 import com.pryv.api.database.DBinitCallback;
 import com.pryv.api.model.Event;
 import com.pryv.api.model.Stream;
@@ -24,8 +25,7 @@ public class Connector {
     public static void initiateConnection() {
         Pryv.deactivateCache();
         Pryv.deactivateSupervisor();
-        connection = new Connection(LoginActivity.getUsername(), LoginActivity.getToken(), new DBinitCallback() {
-        });
+        connection = new Connection(LoginActivity.getUsername(), LoginActivity.getToken(), new DBinitCallback() {});
         instanciateSCB();
         instanciateECB();
     }
@@ -42,6 +42,15 @@ public class Connector {
         event.setStreamId(streamId);
         event.setType(type);
         event.setContent(content);
+        connection.createEvent(event, eventsCallback);
+    }
+
+    public static void saveEvent(String streamId, String type, String content, Double time) {
+        Event event = new Event();
+        event.setStreamId(streamId);
+        event.setType(type);
+        event.setContent(content);
+        event.setTime(time);
         connection.createEvent(event, eventsCallback);
     }
 
