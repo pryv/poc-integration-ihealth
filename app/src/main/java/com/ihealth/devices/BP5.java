@@ -28,13 +28,20 @@ public class BP5 extends Activity {
 	private String deviceMac;
 	private int clientCallbackId;
 	private TextView tv_return;
-	
+	private Stream batteryLevelStream;
+	private Stream historicalDataStream;
+	private Stream onlineResultsStream;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bp5);
 
 		Connector.initiateConnection();
+
+		batteryLevelStream = Connector.saveStream("BP5_batteryLevel","BP5_batteryLevel");
+		historicalDataStream = Connector.saveStream("BP5_historicalData","BP5_historicalData");
+		onlineResultsStream = Connector.saveStream("BP5_onlineResults","BP5_onlineResults");
 
 		Intent intent = getIntent();
 		deviceMac = intent.getStringExtra("mac");
@@ -91,47 +98,51 @@ public class BP5 extends Activity {
 				try {
 					JSONObject info = new JSONObject(message);
 					String battery = info.getString(BpProfile.BATTERY_BP);
-					saveAction("batteryLevel","ratio/percent",battery);
+					tv_return.setText("Battery level: " + battery);
+					Connector.saveEvent(batteryLevelStream.getId(), "ratio/percent", battery);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				
 			}else if(BpProfile.ACTION_DISENABLE_OFFLINE_BP.equals(action)){
-				saveAction("offlineState", "note/txt", "Disable offline");
+				tv_return.setText("Disable offline");
 			}else if(BpProfile.ACTION_ENABLE_OFFLINE_BP.equals(action)){
-				saveAction("offlineState","note/txt","Enable offline");
+				tv_return.setText("Enable offline");
 			}else if(BpProfile.ACTION_ERROR_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
 					String num = info.getString(BpProfile.ERROR_NUM_BP);
-					saveAction("errorNum", "count/generic", num);
+					tv_return.setText("Error: " + num);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				
 			}else if(BpProfile.ACTION_HISTORICAL_DATA_BP.equals(action)){
 				//TODO: JSON
-				String str = "";
 				try {
 					JSONObject info = new JSONObject(message);
 					if (info.has(BpProfile.HISTORICAL_DATA_BP)) {
 			            JSONArray array = info.getJSONArray(BpProfile.HISTORICAL_DATA_BP);
+
+						tv_return.setText("Saving "+array.length()+" historical data...");
+
 			            for (int i = 0; i < array.length(); i++) {
 			            	JSONObject obj = array.getJSONObject(i);
 			            	String date          = obj.getString(BpProfile.MEASUREMENT_DATE_BP);
-			            	String hightPressure = obj.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
+			            	String highPressure = obj.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
 			            	String lowPressure   = obj.getString(BpProfile.LOW_BLOOD_PRESSURE_BP);
 			            	String pulseWave     = obj.getString(BpProfile.PULSEWAVE_BP);
 			            	String ahr           = obj.getString(BpProfile.MEASUREMENT_AHR_BP);
 			            	String hsd           = obj.getString(BpProfile.MEASUREMENT_HSD_BP);
-			            	str = "date:" + date
-			            			+ "hightPressure:" + hightPressure + "\n"
-			            			+ "lowPressure:" + lowPressure + "\n"
-			            			+ "pulseWave" + pulseWave + "\n"
-			            			+ "ahr:" + ahr + "\n"
-			            			+ "hsd:" + hsd + "\n";
-							saveAction("measurement","note/txt",str);
-			            }
+
+							Connector.saveEvent(historicalDataStream.getId(), "note/txt", date);
+							Connector.saveEvent(historicalDataStream.getId(),"pressure/mmhg",highPressure);
+							Connector.saveEvent(historicalDataStream.getId(),"pressure/mmhg",lowPressure);
+							Connector.saveEvent(historicalDataStream.getId(),"note/txt",ahr);
+							Connector.saveEvent(historicalDataStream.getId(), "frequency/bpm", pulseWave);
+							Connector.saveEvent(historicalDataStream.getId(), "note/txt", hsd);
+
+						}
 			        }
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -141,7 +152,7 @@ public class BP5 extends Activity {
 				try {
 					JSONObject info = new JSONObject(message);
 					String num = info.getString(BpProfile.HISTORICAL_NUM_BP);
-					saveAction("historicalNum", "count/generic", num);
+					tv_return.setText("Historical num: " + num);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -150,7 +161,7 @@ public class BP5 extends Activity {
 				try {
 					JSONObject info = new JSONObject(message);
 					String isEnableoffline =info.getString(BpProfile.IS_ENABLE_OFFLINE);
-					saveAction("iEnableOffline", "count/generic", isEnableoffline);
+					tv_return.setText("Is enable offline? " + isEnableoffline);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -159,26 +170,24 @@ public class BP5 extends Activity {
 				try {
 					JSONObject info = new JSONObject(message);
 					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
-					saveAction("pressure", "pressure/mmhg", pressure);
+					tv_return.setText("Pressure: "+pressure);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				
 			}else if(BpProfile.ACTION_ONLINE_PULSEWAVE_BP.equals(action)){
-				//TODO: JSON
 				try {
 					JSONObject info = new JSONObject(message);
 					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
 					String wave = info.getString(BpProfile.PULSEWAVE_BP);
 					String heartbeat = info.getString(BpProfile.FLAG_HEARTBEAT_BP);
-					String s = "Wave: "+wave+"\n Hearthbeat: "+heartbeat+"\n Pressure: "+pressure;
-					saveAction("onlinePulsewave","note/txt",s);
+					String s = "Wave: "+wave+"\nHearthbeat: "+heartbeat+"\nPressure: "+pressure;
+					tv_return.setText(s);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				
 			}else if(BpProfile.ACTION_ONLINE_RESULT_BP.equals(action)){
-				//TODO: JSON
 				try {
 					JSONObject info = new JSONObject(message);
 					String highPressure =info.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
@@ -186,28 +195,27 @@ public class BP5 extends Activity {
 					String ahr =info.getString(BpProfile.MEASUREMENT_AHR_BP);
 					String pulse =info.getString(BpProfile.PULSE_BP);
 					String s = "HighPressure: "+highPressure+"\n LowPressure: "+lowPressure+"\n Ahr: "+ahr+"\n Pulse: "+pulse;
-					saveAction("onlineResult","note/txt",s);
+
+					tv_return.setText(s);
+					Connector.saveEvent(onlineResultsStream.getId(),"pressure/mmhg",highPressure);
+					Connector.saveEvent(onlineResultsStream.getId(),"pressure/mmhg",lowPressure);
+					Connector.saveEvent(onlineResultsStream.getId(),"note/txt",ahr);
+					Connector.saveEvent(onlineResultsStream.getId(),"frequency/bpm",pulse);
+
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				
 			}else if(BpProfile.ACTION_ZOREING_BP.equals(action)){
-				String obj = "zoreing";
-				saveAction("Zero", "note/txt", obj);
+				String obj = "Zoreing";
+				tv_return.setText(obj);
 
 			}else if(BpProfile.ACTION_ZOREOVER_BP.equals(action)){
-				String obj = "zoreover";
-				saveAction("Zero", "note/txt", obj);
+				String obj = "Zoreover";
+				tv_return.setText(obj);
 			}
 		}
 	};
-
-	private void saveAction(String action, String type, String content) {
-		tv_return.setText(content);
-		String streamID = "BP5_"+action;
-		Stream s = Connector.saveStream(streamID,streamID);
-		Connector.saveEvent(s.getId(), type, content);
-	}
 
 	public void getBattery(View v) {
 		bp5Control.getBattery();
