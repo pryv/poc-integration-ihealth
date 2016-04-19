@@ -1,41 +1,37 @@
-package com.ihealth.main;
+package com.ihealth.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.ihealth.Credentials;
 import com.ihealth.R;
 import com.pryv.Pryv;
-import com.pryv.api.model.Permission;
 import com.pryv.auth.AuthController;
 import com.pryv.auth.AuthView;
+import com.pryv.model.Permission;
 
 import java.util.ArrayList;
 
+/**
+ * Launcher class that allows to connect as Pryv user or to create a Pryv account
+ * This is here that credentials storage, domain choice, app id and permissions are managed
+ */
 public class LoginActivity extends Activity {
 
     private String webViewUrl;
-    private String errorMessage = "Unknown error";
     private WebView webView;
 
     private Permission creatorPermission = new Permission("*", Permission.Level.manage, "Creator");
     private ArrayList<Permission> permissions;
 
-    private final static String CREDITENTIALS = "creditentials";
-    private final static String USERNAME = "username";
-    private final static String TOKEN = "token";
-    private static SharedPreferences preferences;
-
+    private String errorMessage = "Unknown error";
     public final static String DOMAIN = "pryv-switch.ch";
     public final static String APPID = "app-android-iHealth";
 
@@ -44,15 +40,22 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        new Credentials(this).resetCredentials();
 
         webView = (WebView) findViewById(R.id.webview);
+
+        // TODO: SET ELSEWHERE???
         Pryv.setDomain(DOMAIN);
+
         permissions = new ArrayList<>();
         permissions.add(creatorPermission);
         new SigninAsync().execute();
     }
 
+    /**
+     * AsyncTask that requests the login page from Pryv
+     * using AuthController and shows it in a WebView
+     */
     private class SigninAsync extends AsyncTask<Void, Void, Void> {
 
         private ProgressDialog progressDialog;
@@ -82,79 +85,52 @@ public class LoginActivity extends Activity {
                 webView.getSettings().setUseWideViewPort(true);
                 webView.loadUrl(webViewUrl);
             } else {
-                showError();
+                new AlertDialog.Builder(LoginActivity.this)
+                        .setTitle("Authentification error: ")
+                        .setMessage(errorMessage)
+                        .setPositiveButton("Try again", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                                startActivity(getIntent());
+                            }
+                        })
+                        .show();
             }
         }
 
     }
 
+    /**
+     * Custom AuthView that configures some callbacks
+     */
     private class CustomAuthView implements AuthView {
 
         @Override
+        // Set up the WebView url when we get it from AuthController
         public void displayLoginView(String loginURL) {
             webViewUrl = loginURL;
         }
 
         @Override
+        // Save the credentials if authentication succeeds
         public void onAuthSuccess(String username, String token) {
-            setCreditentials(username, token);
+            new Credentials(LoginActivity.this).setCredentials(username,token);
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
 
         @Override
+        // Set up error messages if authentication fails
         public void onAuthError(String msg) {
             errorMessage = msg;
         }
 
         @Override
+        // Set up error messages if authentication is refused
         public void onAuthRefused(int reasonId, String msg, String detail) {
             errorMessage = msg;
         }
-    }
-
-    public void showError() {
-        new AlertDialog.Builder(this)
-                .setTitle("Authentification error: ")
-                .setMessage(errorMessage)
-                .setPositiveButton("Try again", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                        startActivity(getIntent());
-                    }
-                })
-                .show();
-    }
-
-    public static void setCreditentials(String username, String token) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(USERNAME, encrypt(username));
-        editor.putString(TOKEN, encrypt(token));
-        editor.apply();
-    }
-
-    public static void resetCreditentials() {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.remove(USERNAME);
-        editor.remove(TOKEN);
-        editor.apply();
-    }
-
-    public static String getUsername() {
-        return decrypt(preferences.getString(USERNAME, null));
-    }
-
-    public static String getToken() {
-        return decrypt(preferences.getString(TOKEN, null));
-    }
-
-    public static String encrypt(String input) {
-        return (input != null) ? Base64.encodeToString(input.getBytes(), Base64.DEFAULT) : null;
-    }
-
-    public static String decrypt(String input) {
-        return (input != null) ? new String(Base64.decode(input, Base64.DEFAULT)) : null;
     }
 
 }

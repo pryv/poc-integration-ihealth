@@ -5,16 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.ihealth.AndroidConnection;
+import com.ihealth.Credentials;
 import com.ihealth.R;
 import com.ihealth.communication.control.Bp5Control;
 import com.ihealth.communication.control.BpProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
-import com.ihealth.utils.Connector;
-import com.pryv.api.model.Event;
-import com.pryv.api.model.Stream;
+import com.pryv.model.Stream;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,17 +30,21 @@ public class BP5 extends Activity {
 	private Stream batteryLevelStream;
 	private Stream historicalDataStream;
 	private Stream onlineResultsStream;
+	private AndroidConnection connection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bp5);
 
-		Connector.initiateConnection();
+		// Initiate new connection to Pryv with connected account
+		Credentials credentials = new Credentials(this);
+		connection = new AndroidConnection(credentials.getUsername(), credentials.getToken());
 
-		batteryLevelStream = Connector.saveStream("BP5_batteryLevel","BP5_batteryLevel");
-		historicalDataStream = Connector.saveStream("BP5_historicalData","BP5_historicalData");
-		onlineResultsStream = Connector.saveStream("BP5_onlineResults","BP5_onlineResults");
+
+		batteryLevelStream = connection.saveStream("BP5_batteryLevel","BP5_batteryLevel");
+		historicalDataStream = connection.saveStream("BP5_historicalData","BP5_historicalData");
+		onlineResultsStream = connection.saveStream("BP5_onlineResults","BP5_onlineResults");
 
 		Intent intent = getIntent();
 		deviceMac = intent.getStringExtra("mac");
@@ -99,7 +102,7 @@ public class BP5 extends Activity {
 					JSONObject info = new JSONObject(message);
 					String battery = info.getString(BpProfile.BATTERY_BP);
 					tv_return.setText("Battery level: " + battery);
-					Connector.saveEvent(batteryLevelStream.getId(), "ratio/percent", battery);
+					connection.saveEvent(batteryLevelStream.getId(), "ratio/percent", battery);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -135,12 +138,12 @@ public class BP5 extends Activity {
 			            	String ahr           = obj.getString(BpProfile.MEASUREMENT_AHR_BP);
 			            	String hsd           = obj.getString(BpProfile.MEASUREMENT_HSD_BP);
 
-							Connector.saveEvent(historicalDataStream.getId(), "note/txt", date);
-							Connector.saveEvent(historicalDataStream.getId(),"pressure/mmhg",highPressure);
-							Connector.saveEvent(historicalDataStream.getId(),"pressure/mmhg",lowPressure);
-							Connector.saveEvent(historicalDataStream.getId(),"note/txt",ahr);
-							Connector.saveEvent(historicalDataStream.getId(), "frequency/bpm", pulseWave);
-							Connector.saveEvent(historicalDataStream.getId(), "note/txt", hsd);
+							connection.saveEvent(historicalDataStream.getId(), "note/txt", date);
+							connection.saveEvent(historicalDataStream.getId(),"pressure/mmhg",highPressure);
+							connection.saveEvent(historicalDataStream.getId(),"pressure/mmhg",lowPressure);
+							connection.saveEvent(historicalDataStream.getId(),"note/txt",ahr);
+							connection.saveEvent(historicalDataStream.getId(), "frequency/bpm", pulseWave);
+							connection.saveEvent(historicalDataStream.getId(), "note/txt", hsd);
 
 						}
 			        }
@@ -197,10 +200,10 @@ public class BP5 extends Activity {
 					String s = "HighPressure: "+highPressure+"\n LowPressure: "+lowPressure+"\n Ahr: "+ahr+"\n Pulse: "+pulse;
 
 					tv_return.setText(s);
-					Connector.saveEvent(onlineResultsStream.getId(),"pressure/mmhg",highPressure);
-					Connector.saveEvent(onlineResultsStream.getId(),"pressure/mmhg",lowPressure);
-					Connector.saveEvent(onlineResultsStream.getId(),"note/txt",ahr);
-					Connector.saveEvent(onlineResultsStream.getId(),"frequency/bpm",pulse);
+					connection.saveEvent(onlineResultsStream.getId(),"pressure/mmhg",highPressure);
+					connection.saveEvent(onlineResultsStream.getId(),"pressure/mmhg",lowPressure);
+					connection.saveEvent(onlineResultsStream.getId(),"note/txt",ahr);
+					connection.saveEvent(onlineResultsStream.getId(),"frequency/bpm",pulse);
 
 				} catch (JSONException e) {
 					e.printStackTrace();

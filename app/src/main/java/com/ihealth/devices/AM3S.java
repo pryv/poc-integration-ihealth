@@ -3,29 +3,24 @@ package com.ihealth.devices;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
+import com.ihealth.AndroidConnection;
+import com.ihealth.Credentials;
 import com.ihealth.R;
+import com.ihealth.activities.LoginActivity;
 import com.ihealth.communication.control.Am3sControl;
 import com.ihealth.communication.control.AmProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
-import com.ihealth.utils.Connector;
-import com.pryv.api.StreamsCallback;
-import com.pryv.api.StreamsSupervisor;
-import com.pryv.api.model.Stream;
+import com.pryv.api.OnlineEventsAndStreamsManager;
+import com.pryv.model.Event;
+import com.pryv.model.Stream;
 
-import org.joda.time.field.PreciseDateTimeField;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Map;
 
 public class AM3S extends Activity {
     private Am3sControl am3sControl;
@@ -39,21 +34,24 @@ public class AM3S extends Activity {
     private Stream sleepStream;
     private Stream batteryStream;
     private Stream stageStream;
+    private AndroidConnection connection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_am3_s);
 
-        Connector.initiateConnection();
+        // Initiate new connection to Pryv with connected account
+        Credentials credentials = new Credentials(this);
+        connection = new AndroidConnection(credentials.getUsername(), credentials.getToken());
 
-        randomStream = Connector.saveStream("AM3S_random", "AM3S_random");
-        userStream = Connector.saveStream("AM3S_userAge", "AM3S_userAge");
-        stepsStream = Connector.saveStream("AM3S_realSteps", "AM3S_realSteps");
-        activitiesStream = Connector.saveStream("AM3S_syncActivities", "AM3S_syncActivities");
-        sleepStream = Connector.saveStream("AM3S_syncSleeps", "AM3S_syncSleeps");
-        batteryStream = Connector.saveStream("AM3S_battery", "AM3S_battery");
-        stageStream = Connector.saveStream("AM3S_syncStage", "AM3S_syncStage");
+        randomStream = connection.saveStream("AM3S_random", "AM3S_random");
+        userStream = connection.saveStream("AM3S_userAge", "AM3S_userAge");
+        stepsStream = connection.saveStream("AM3S_realSteps", "AM3S_realSteps");
+        activitiesStream = connection.saveStream("AM3S_syncActivities", "AM3S_syncActivities");
+        sleepStream = connection.saveStream("AM3S_syncSleeps", "AM3S_syncSleeps");
+        batteryStream = connection.saveStream("AM3S_battery", "AM3S_battery");
+        stageStream = connection.saveStream("AM3S_syncStage", "AM3S_syncStage");
 
         clientId = iHealthDevicesManager.getInstance().registerClientCallback(iHealthDevicesCallback);
 
@@ -112,7 +110,7 @@ public class AM3S extends Activity {
                         JSONObject info = new JSONObject(message);
                         String battery = info.getString(AmProfile.QUERY_BATTERY_AM);
                         tv_return.setText("Battery: "+battery);
-                        Connector.saveEvent(batteryStream.getId(), "ratio/percent", battery);
+                        connection.saveEvent(batteryStream.getId(), "ratio/percent", battery);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -141,7 +139,7 @@ public class AM3S extends Activity {
                         //TODO: time, activity with duration
                         JSONObject info = new JSONObject(message);
                         tv_return.setText("Sync stage data...");
-                        Connector.saveEvent(stageStream.getId(), "note/txt", info.toString());
+                        connection.saveEvent(stageStream.getId(), "note/txt", info.toString());
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -160,8 +158,8 @@ public class AM3S extends Activity {
                             JSONObject activity = activities.getJSONObject(i);
                             String time = activity.getString(AmProfile.SYNC_SLEEP_DATA_TIME_AM);
                             String level = activity.getString(AmProfile.SYNC_SLEEP_DATA_LEVEL_AM);
-                            Connector.saveEvent(sleepStream.getId(), "note/txt", time);
-                            Connector.saveEvent(sleepStream.getId(), "count/generic", level);
+                            connection.saveEvent(sleepStream.getId(), "note/txt", time);
+                            connection.saveEvent(sleepStream.getId(), "count/generic", level);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -183,10 +181,10 @@ public class AM3S extends Activity {
                             String steps = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_STEP_AM);
                             String calories = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_CALORIE_AM);
 
-                            Connector.saveEvent(activitiesStream.getId(), "note/txt", time);
-                            Connector.saveEvent(activitiesStream.getId(), "time/min", stepLength);
-                            Connector.saveEvent(activitiesStream.getId(), "count/steps", steps);
-                            Connector.saveEvent(activitiesStream.getId(), "energy/cal", calories);
+                            connection.saveEvent(activitiesStream.getId(), "note/txt", time);
+                            connection.saveEvent(activitiesStream.getId(), "time/min", stepLength);
+                            connection.saveEvent(activitiesStream.getId(), "count/steps", steps);
+                            connection.saveEvent(activitiesStream.getId(), "energy/cal", calories);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -197,7 +195,7 @@ public class AM3S extends Activity {
                         JSONObject info = new JSONObject(message);
                         String real_info = info.getString(AmProfile.SYNC_REAL_STEP_AM);
                         tv_return.setText("Real steps: "+real_info);
-                        Connector.saveEvent(stepsStream.getId(), "count/generic", real_info);
+                        connection.saveEvent(stepsStream.getId(), "count/generic", real_info);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -207,7 +205,7 @@ public class AM3S extends Activity {
                         JSONObject info = new JSONObject(message);
                         String user_info = info.getString(AmProfile.GET_USER_AGE_AM);
                         tv_return.setText("User age: "+user_info);
-                        Connector.saveEvent(userStream.getId(), "count/generic", user_info);
+                        connection.saveEvent(userStream.getId(), "count/generic", user_info);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -231,7 +229,7 @@ public class AM3S extends Activity {
                         String random = info.getString(AmProfile.GET_RANDOM_AM);
 
                         tv_return.setText("Generated random: "+random);
-                        Connector.saveEvent(randomStream.getId(), "count/generic", random);
+                        connection.saveEvent(randomStream.getId(), "count/generic", random);
 
                     } catch (JSONException e) {
                         e.printStackTrace();

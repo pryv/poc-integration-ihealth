@@ -1,5 +1,5 @@
 
-package com.ihealth.main;
+package com.ihealth.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -15,7 +15,6 @@ import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
 import com.ihealth.devices.AM3S;
 import com.ihealth.devices.BP5;
-import com.ihealth.utils.Connector;
 
 /**
  * Activity for scan and connect available iHealth devices.
