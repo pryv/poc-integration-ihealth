@@ -49,5 +49,5 @@ dependencies {
     compile files('libs/iHealthLibrary_2.2.3.jar')
     compile files('libs/pl2303driver.jar')
     compile files('libs/smartlinklib3.6.4_product.jar')
-    compile 'com.github.Pryv:lib-java:master-SNAPSHOT'
+    compile 'com.github.Pryv:lib-java:v1.0'
 }

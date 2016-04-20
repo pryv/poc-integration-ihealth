@@ -26,7 +26,8 @@ import java.util.Map;
  * and notifying UI through handlers
  */
 public class AndroidConnection {
-    private Connection connection;
+    //private Connection connection;
+    private OnlineEventsAndStreamsManager online;
     private EventsCallback eventsCallback;
     private StreamsCallback streamsCallback;
 
@@ -34,7 +35,9 @@ public class AndroidConnection {
         setCallbacks();
 
         // Initiate new connection to Pryv with connected account
-        connection = new Connection(username, token, LoginActivity.DOMAIN, new DBinitCallback());
+        //connection = new Connection(username, token, LoginActivity.DOMAIN, new DBinitCallback());
+        String url = "https://" + username + "." + LoginActivity.DOMAIN + "/";
+        online = new OnlineEventsAndStreamsManager(url, token, null);
 
     }
 
@@ -49,7 +52,8 @@ public class AndroidConnection {
         event.setStreamId(streamId);
         event.setType(type);
         event.setContent(content);
-        connection.events.create(event, eventsCallback);
+        //connection.events.create(event, eventsCallback);
+        online.createEvent(event,eventsCallback);
     }
 
     /**
@@ -61,7 +65,8 @@ public class AndroidConnection {
         Stream stream = new Stream();
         stream.setId(streamId);
         stream.setName(streamName);
-        connection.streams.create(stream, streamsCallback);
+        //connection.streams.create(stream, streamsCallback);
+        online.createStream(stream,streamsCallback);
         return stream;
     }
 

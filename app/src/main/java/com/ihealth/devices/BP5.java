@@ -107,11 +107,11 @@ public class BP5 extends Activity {
 					e.printStackTrace();
 				}
 				
-			}else if(BpProfile.ACTION_DISENABLE_OFFLINE_BP.equals(action)){
+			} else if(BpProfile.ACTION_DISENABLE_OFFLINE_BP.equals(action)){
 				tv_return.setText("Disable offline");
-			}else if(BpProfile.ACTION_ENABLE_OFFLINE_BP.equals(action)){
+			} else if(BpProfile.ACTION_ENABLE_OFFLINE_BP.equals(action)){
 				tv_return.setText("Enable offline");
-			}else if(BpProfile.ACTION_ERROR_BP.equals(action)){
+			} else if(BpProfile.ACTION_ERROR_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
 					String num = info.getString(BpProfile.ERROR_NUM_BP);
@@ -120,7 +120,7 @@ public class BP5 extends Activity {
 					e.printStackTrace();
 				}
 				
-			}else if(BpProfile.ACTION_HISTORICAL_DATA_BP.equals(action)){
+			} else if(BpProfile.ACTION_HISTORICAL_DATA_BP.equals(action)){
 				//TODO: JSON
 				try {
 					JSONObject info = new JSONObject(message);
@@ -151,7 +151,7 @@ public class BP5 extends Activity {
 					e.printStackTrace();
 				}
 				
-			}else if(BpProfile.ACTION_HISTORICAL_NUM_BP.equals(action)){
+			} else if(BpProfile.ACTION_HISTORICAL_NUM_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
 					String num = info.getString(BpProfile.HISTORICAL_NUM_BP);
@@ -160,7 +160,7 @@ public class BP5 extends Activity {
 					e.printStackTrace();
 				}
 				
-			}else if(BpProfile.ACTION_IS_ENABLE_OFFLINE.equals(action)){
+			} else if(BpProfile.ACTION_IS_ENABLE_OFFLINE.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
 					String isEnableoffline =info.getString(BpProfile.IS_ENABLE_OFFLINE);
@@ -169,7 +169,7 @@ public class BP5 extends Activity {
 					e.printStackTrace();
 				}
 				
-			}else if(BpProfile.ACTION_ONLINE_PRESSURE_BP.equals(action)){
+			} else if(BpProfile.ACTION_ONLINE_PRESSURE_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
 					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
@@ -178,7 +178,7 @@ public class BP5 extends Activity {
 					e.printStackTrace();
 				}
 				
-			}else if(BpProfile.ACTION_ONLINE_PULSEWAVE_BP.equals(action)){
+			} else if(BpProfile.ACTION_ONLINE_PULSEWAVE_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
 					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
@@ -190,7 +190,7 @@ public class BP5 extends Activity {
 					e.printStackTrace();
 				}
 				
-			}else if(BpProfile.ACTION_ONLINE_RESULT_BP.equals(action)){
+			} else if(BpProfile.ACTION_ONLINE_RESULT_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
 					String highPressure =info.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
