@@ -27,13 +27,10 @@ public class AM3S extends Activity {
     private String mac;
     private int clientId;
     private TextView tv_return;
-    private Stream randomStream;
-    private Stream userStream;
     private Stream stepsStream;
     private Stream activitiesStream;
     private Stream sleepStream;
     private Stream batteryStream;
-    private Stream stageStream;
     private AndroidConnection connection;
 
     @Override
@@ -45,13 +42,10 @@ public class AM3S extends Activity {
         Credentials credentials = new Credentials(this);
         connection = new AndroidConnection(credentials.getUsername(), credentials.getToken());
 
-        randomStream = connection.saveStream("AM3S_random", "AM3S_random");
-        userStream = connection.saveStream("AM3S_userAge", "AM3S_userAge");
         stepsStream = connection.saveStream("AM3S_realSteps", "AM3S_realSteps");
         activitiesStream = connection.saveStream("AM3S_syncActivities", "AM3S_syncActivities");
         sleepStream = connection.saveStream("AM3S_syncSleeps", "AM3S_syncSleeps");
         batteryStream = connection.saveStream("AM3S_battery", "AM3S_battery");
-        stageStream = connection.saveStream("AM3S_syncStage", "AM3S_syncStage");
 
         clientId = iHealthDevicesManager.getInstance().registerClientCallback(iHealthDevicesCallback);
 
@@ -139,8 +133,6 @@ public class AM3S extends Activity {
                         //TODO: time, activity with duration
                         JSONObject info = new JSONObject(message);
                         tv_return.setText("Sync stage data...");
-                        connection.saveEvent(stageStream.getId(), "note/txt", info.toString());
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -205,7 +197,6 @@ public class AM3S extends Activity {
                         JSONObject info = new JSONObject(message);
                         String user_info = info.getString(AmProfile.GET_USER_AGE_AM);
                         tv_return.setText("User age: "+user_info);
-                        connection.saveEvent(userStream.getId(), "count/generic", user_info);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -229,7 +220,6 @@ public class AM3S extends Activity {
                         String random = info.getString(AmProfile.GET_RANDOM_AM);
 
                         tv_return.setText("Generated random: "+random);
-                        connection.saveEvent(randomStream.getId(), "count/generic", random);
 
                     } catch (JSONException e) {
                         e.printStackTrace();

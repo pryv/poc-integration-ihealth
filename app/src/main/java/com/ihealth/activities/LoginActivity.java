@@ -32,7 +32,7 @@ public class LoginActivity extends Activity {
     private ArrayList<Permission> permissions;
 
     private String errorMessage = "Unknown error";
-    public final static String DOMAIN = "pryv-switch.ch";
+    public final static String DOMAIN = "pryv.me";
     public final static String APPID = "app-android-iHealth";
 
     @Override
