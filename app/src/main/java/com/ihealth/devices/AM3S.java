@@ -3,6 +3,7 @@ package com.ihealth.devices;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,6 +19,9 @@ import com.pryv.api.OnlineEventsAndStreamsManager;
 import com.pryv.model.Event;
 import com.pryv.model.Stream;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -103,7 +107,7 @@ public class AM3S extends Activity {
                     try {
                         JSONObject info = new JSONObject(message);
                         String battery = info.getString(AmProfile.QUERY_BATTERY_AM);
-                        tv_return.setText("Battery: "+battery);
+                        tv_return.setText("Battery: " + battery);
                         connection.saveEvent(batteryStream.getId(), "ratio/percent", battery);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -114,7 +118,7 @@ public class AM3S extends Activity {
                     try {
                         JSONObject info = new JSONObject(message);
                         String id = info.getString(AmProfile.USERID_AM);
-                        tv_return.setText("User id: "+id);
+                        tv_return.setText("User id: " + id);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -123,7 +127,7 @@ public class AM3S extends Activity {
                     try {
                         JSONObject info = new JSONObject(message);
                         String alarm_num = info.getString(AmProfile.GET_ALARMNUM_AM);
-                        tv_return.setText("Alarm num: "+alarm_num);
+                        tv_return.setText("Alarm num: " + alarm_num);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -146,12 +150,15 @@ public class AM3S extends Activity {
 
                         tv_return.setText("Sync " + activities.length() + " sleeps...");
 
-                        for(int i=0; i<activities.length(); i++) {
+                        for (int i = 0; i < activities.length(); i++) {
                             JSONObject activity = activities.getJSONObject(i);
                             String time = activity.getString(AmProfile.SYNC_SLEEP_DATA_TIME_AM);
                             String level = activity.getString(AmProfile.SYNC_SLEEP_DATA_LEVEL_AM);
-                            connection.saveEvent(sleepStream.getId(), "note/txt", time);
-                            connection.saveEvent(sleepStream.getId(), "count/generic", level);
+
+                            Log.d("PRYV", "SLEEPTIME: " + time);
+                            DateTime date = getDate(time);
+
+                            connection.saveEvent(sleepStream.getId(), "count/generic", level, date);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -159,24 +166,25 @@ public class AM3S extends Activity {
                     break;
                 case AmProfile.ACTION_SYNC_ACTIVITY_DATA_AM:
                     try {
-                        //TODO: time, activity with duration
                         JSONObject info = new JSONObject(message);
                         JSONArray activity_info = info.getJSONArray(AmProfile.SYNC_ACTIVITY_DATA_AM);
                         JSONArray activities = activity_info.getJSONObject(0).getJSONArray(AmProfile.SYNC_ACTIVITY_EACH_DATA_AM);
 
-                        tv_return.setText("Sync "+activities.length()+" activities...");
+                        tv_return.setText("Sync " + activities.length() + " activities...");
 
-                        for(int i=0; i<activities.length(); i++) {
+                        for (int i = 0; i < activities.length(); i++) {
                             JSONObject activity = activities.getJSONObject(i);
                             String time = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_TIME_AM);
                             String stepLength = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_STEP_LENGTH_AM);
                             String steps = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_STEP_AM);
                             String calories = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_CALORIE_AM);
 
-                            connection.saveEvent(activitiesStream.getId(), "note/txt", time);
-                            connection.saveEvent(activitiesStream.getId(), "time/min", stepLength);
-                            connection.saveEvent(activitiesStream.getId(), "count/steps", steps);
-                            connection.saveEvent(activitiesStream.getId(), "energy/cal", calories);
+                            Log.d("PRYV", "ACTIVITYTIME: " + time);
+                            DateTime date = getDate(time);
+
+                            connection.saveEvent(activitiesStream.getId(), "time/min", stepLength, date);
+                            connection.saveEvent(activitiesStream.getId(), "count/steps", steps, date);
+                            connection.saveEvent(activitiesStream.getId(), "energy/cal", calories, date);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -186,7 +194,7 @@ public class AM3S extends Activity {
                     try {
                         JSONObject info = new JSONObject(message);
                         String real_info = info.getString(AmProfile.SYNC_REAL_STEP_AM);
-                        tv_return.setText("Real steps: "+real_info);
+                        tv_return.setText("Real steps: " + real_info);
                         connection.saveEvent(stepsStream.getId(), "count/generic", real_info);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -196,7 +204,7 @@ public class AM3S extends Activity {
                     try {
                         JSONObject info = new JSONObject(message);
                         String user_info = info.getString(AmProfile.GET_USER_AGE_AM);
-                        tv_return.setText("User age: "+user_info);
+                        tv_return.setText("User age: " + user_info);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -219,7 +227,7 @@ public class AM3S extends Activity {
                         JSONObject info = new JSONObject(message);
                         String random = info.getString(AmProfile.GET_RANDOM_AM);
 
-                        tv_return.setText("Generated random: "+random);
+                        tv_return.setText("Generated random: " + random);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -230,6 +238,16 @@ public class AM3S extends Activity {
             }
         }
     };
+
+    private DateTime getDate(String time) {
+        // 2016-4-2 02:10:00
+        // DateTime date = new DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute)
+        // Format for input
+        DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        // Parsing the date
+        DateTime jodatime = dtf.parseDateTime(time);
+        return jodatime;
+    }
 
     public void getBattery(View v) {
         am3sControl.queryAMState();
@@ -274,5 +292,4 @@ public class AM3S extends Activity {
     public void sendRandom(View v) {
         am3sControl.sendRandom();
     }
-
 }

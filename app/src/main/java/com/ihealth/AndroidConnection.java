@@ -16,6 +16,8 @@ import com.pryv.interfaces.StreamsCallback;
 import com.pryv.model.Event;
 import com.pryv.model.Stream;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,16 @@ public class AndroidConnection {
         event.setStreamId(streamId);
         event.setType(type);
         event.setContent(content);
+        //connection.events.create(event, eventsCallback);
+        online.createEvent(event,eventsCallback);
+    }
+
+    public void saveEvent(String streamId, String type, String content, DateTime date) {
+        Event event = new Event();
+        event.setStreamId(streamId);
+        event.setType(type);
+        event.setContent(content);
+        event.setDate(date);
         //connection.events.create(event, eventsCallback);
         online.createEvent(event,eventsCallback);
     }
