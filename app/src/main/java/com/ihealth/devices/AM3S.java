@@ -157,8 +157,8 @@ public class AM3S extends Activity {
                             String time = activity.getString(AmProfile.SYNC_SLEEP_DATA_TIME_AM);
                             String level = activity.getString(AmProfile.SYNC_SLEEP_DATA_LEVEL_AM);
 
-                            DateTime date = getDate(time);
-                            connection.saveEvent(sleepStream.getId(), "count/generic", level, date);
+                            double unixTime = getUnixTime(time);
+                            connection.saveEvent(sleepStream.getId(), "count/generic", level, unixTime);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -179,10 +179,10 @@ public class AM3S extends Activity {
                             String steps = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_STEP_AM);
                             String calories = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_CALORIE_AM);
 
-                            DateTime date = getDate(time);
-                            connection.saveEvent(activitiesStream.getId(), "time/min", stepLength, date);
-                            connection.saveEvent(activitiesStream.getId(), "count/steps", steps, date);
-                            connection.saveEvent(activitiesStream.getId(), "energy/cal", calories, date);
+                            double unixTime = getUnixTime(time);
+                            connection.saveEvent(activitiesStream.getId(), "time/min", stepLength, unixTime);
+                            connection.saveEvent(activitiesStream.getId(), "count/steps", steps, unixTime);
+                            connection.saveEvent(activitiesStream.getId(), "energy/cal", calories, unixTime);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -237,14 +237,10 @@ public class AM3S extends Activity {
         }
     };
 
-    private DateTime getDate(String time) {
-        // 2016-4-2 02:10:00
-        // DateTime date = new DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute)
-        // Format for input
+    private double getUnixTime(String time) {
         DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        // Parsing the date
-        DateTime jodatime = dtf.parseDateTime(time);
-        return jodatime;
+        DateTime jodaTime = dtf.parseDateTime(time);
+        return Double.valueOf((double)jodaTime.getMillis() / 1000.0D);
     }
 
     public void getBattery(View v) {
@@ -288,9 +284,6 @@ public class AM3S extends Activity {
     }
 
     public void sendRandom(View v) {
-        String time = "2016-4-2 02:10:00";
-        DateTime date = getDate(time);
-        connection.saveEvent(testStream.getId(), "note/txt", "blabla", date);
         am3sControl.sendRandom();
     }
 }

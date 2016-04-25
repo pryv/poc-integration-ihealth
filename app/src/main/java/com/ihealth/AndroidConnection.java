@@ -49,13 +49,8 @@ public class AndroidConnection {
         connection.events.create(new Event(streamId, null, type, content), eventsCallback);
     }
 
-    public void saveEvent(String streamId, String type, String content, DateTime date) {
-        Event event = new Event();
-        event.setStreamId(streamId);
-        event.setType(type);
-        event.setContent(content);
-        event.setDate(date);
-        connection.events.create(event, eventsCallback);
+    public void saveEvent(String streamId, String type, String content, double time) {
+        connection.events.create(new Event(streamId, time, type, content), eventsCallback);
     }
 
     /**
