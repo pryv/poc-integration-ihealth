@@ -28,8 +28,7 @@ import java.util.Map;
  * and notifying UI through handlers
  */
 public class AndroidConnection {
-    //private Connection connection;
-    private OnlineEventsAndStreamsManager online;
+    private Connection connection;
     private EventsCallback eventsCallback;
     private StreamsCallback streamsCallback;
 
@@ -37,10 +36,7 @@ public class AndroidConnection {
         setCallbacks();
 
         // Initiate new connection to Pryv with connected account
-        //connection = new Connection(username, token, LoginActivity.DOMAIN, new DBinitCallback());
-        String url = "https://" + username + "." + LoginActivity.DOMAIN + "/";
-        online = new OnlineEventsAndStreamsManager(url, token, null);
-
+        connection = new Connection(username, token, LoginActivity.DOMAIN, false, new DBinitCallback());
     }
 
     /**
@@ -50,12 +46,7 @@ public class AndroidConnection {
      * @param content: content of the new event
      */
     public void saveEvent(String streamId, String type, String content) {
-        Event event = new Event();
-        event.setStreamId(streamId);
-        event.setType(type);
-        event.setContent(content);
-        //connection.events.create(event, eventsCallback);
-        online.createEvent(event,eventsCallback);
+        connection.events.create(new Event(streamId, null, type, content), eventsCallback);
     }
 
     public void saveEvent(String streamId, String type, String content, DateTime date) {
@@ -64,8 +55,7 @@ public class AndroidConnection {
         event.setType(type);
         event.setContent(content);
         event.setDate(date);
-        //connection.events.create(event, eventsCallback);
-        online.createEvent(event,eventsCallback);
+        connection.events.create(event, eventsCallback);
     }
 
     /**
@@ -77,8 +67,7 @@ public class AndroidConnection {
         Stream stream = new Stream();
         stream.setId(streamId);
         stream.setName(streamName);
-        //connection.streams.create(stream, streamsCallback);
-        online.createStream(stream,streamsCallback);
+        connection.streams.create(stream, streamsCallback);
         return stream;
     }
 

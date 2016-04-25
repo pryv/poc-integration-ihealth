@@ -35,6 +35,7 @@ public class AM3S extends Activity {
     private Stream activitiesStream;
     private Stream sleepStream;
     private Stream batteryStream;
+    private Stream testStream;
     private AndroidConnection connection;
 
     @Override
@@ -50,6 +51,7 @@ public class AM3S extends Activity {
         activitiesStream = connection.saveStream("AM3S_syncActivities", "AM3S_syncActivities");
         sleepStream = connection.saveStream("AM3S_syncSleeps", "AM3S_syncSleeps");
         batteryStream = connection.saveStream("AM3S_battery", "AM3S_battery");
+        testStream = connection.saveStream("AM3S_test", "AM3S_test");
 
         clientId = iHealthDevicesManager.getInstance().registerClientCallback(iHealthDevicesCallback);
 
@@ -155,9 +157,7 @@ public class AM3S extends Activity {
                             String time = activity.getString(AmProfile.SYNC_SLEEP_DATA_TIME_AM);
                             String level = activity.getString(AmProfile.SYNC_SLEEP_DATA_LEVEL_AM);
 
-                            Log.d("PRYV", "SLEEPTIME: " + time);
                             DateTime date = getDate(time);
-
                             connection.saveEvent(sleepStream.getId(), "count/generic", level, date);
                         }
                     } catch (JSONException e) {
@@ -179,9 +179,7 @@ public class AM3S extends Activity {
                             String steps = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_STEP_AM);
                             String calories = activity.getString(AmProfile.SYNC_ACTIVITY_DATA_CALORIE_AM);
 
-                            Log.d("PRYV", "ACTIVITYTIME: " + time);
                             DateTime date = getDate(time);
-
                             connection.saveEvent(activitiesStream.getId(), "time/min", stepLength, date);
                             connection.saveEvent(activitiesStream.getId(), "count/steps", steps, date);
                             connection.saveEvent(activitiesStream.getId(), "energy/cal", calories, date);
@@ -290,6 +288,9 @@ public class AM3S extends Activity {
     }
 
     public void sendRandom(View v) {
+        String time = "2016-4-2 02:10:00";
+        DateTime date = getDate(time);
+        connection.saveEvent(testStream.getId(), "note/txt", "blabla", date);
         am3sControl.sendRandom();
     }
 }
