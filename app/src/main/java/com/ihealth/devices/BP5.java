@@ -30,8 +30,9 @@ public class BP5 extends Activity {
 	private Stream batteryLevelStream;
 	private Stream highPressureStream;
 	private Stream lowPressureStream;
-	private Stream ahrStream;
+	//private Stream ahrStream;
 	private Stream pulseStream;
+	private Stream heartBeatStream;
 	//private Stream historicalDataStream;
 	private AndroidConnection connection;
 
@@ -48,6 +49,7 @@ public class BP5 extends Activity {
 		batteryLevelStream = connection.saveStream("BP5_batteryLevel","BP5_batteryLevel");
 		highPressureStream = connection.saveStream("BP5_highPressure","BP5_highPressure");
 		lowPressureStream = connection.saveStream("BP5_lowPressure","BP5_lowPressure");
+		heartBeatStream = connection.saveStream("BP5_heartBeat","BP5_heartBeat");
 		//ahrStream = connection.saveStream("BP5_ahr","BP5_ahr");
 		pulseStream = connection.saveStream("BP5_pulse","BP5_pulse");
 		//historicalDataStream = connection.saveStream("BP5_historicalData","BP5_historicalData");
@@ -56,6 +58,7 @@ public class BP5 extends Activity {
 		onlineResultsStream.addChildStream(highPressureStream);
 		//onlineResultsStream.addChildStream(ahrStream);
 		onlineResultsStream.addChildStream(pulseStream);
+		onlineResultsStream.addChildStream(heartBeatStream);
 
 		Intent intent = getIntent();
 		deviceMac = intent.getStringExtra("mac");
@@ -184,7 +187,7 @@ public class BP5 extends Activity {
 				try {
 					JSONObject info = new JSONObject(message);
 					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
-					tv_return.setText("Pressure: "+pressure);
+					tv_return.setText("Pressure: " + pressure);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -197,6 +200,7 @@ public class BP5 extends Activity {
 					String heartbeat = info.getString(BpProfile.FLAG_HEARTBEAT_BP);
 					String s = "Wave: "+wave+"\nHearthbeat: "+heartbeat+"\nPressure: "+pressure;
 					tv_return.setText(s);
+					connection.saveEvent(heartBeatStream.getId(), "pressure/mmhg", pressure);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
