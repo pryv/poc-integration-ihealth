@@ -31,8 +31,14 @@
         <activity
             android:name="com.ihealth.devices.AM3S"
             android:label="@string/title_activity_am3_s"></activity>
-        <activity android:name="com.ihealth.activities.MainActivity"/>
+        <activity android:name="com.ihealth.activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.LoginActivity"/>
     </application>
 
 </manifest>
