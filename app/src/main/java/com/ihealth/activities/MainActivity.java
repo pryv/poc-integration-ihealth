@@ -8,8 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.ihealth.Credentials;
 import com.ihealth.R;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
@@ -27,6 +29,10 @@ public class MainActivity extends Activity {
     private final static int BLUETOOTH_ENABLED = 1;
     private final static int DEVICE = 2;
     private boolean bluetoothReady = false;
+    private Credentials credentials;
+    private static final int LOGIN_REQUEST = 3;
+    private Button login;
+
 
     /*
      * Example creditentials
@@ -39,6 +45,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        credentials = new Credentials(this);
+        login = (Button) findViewById(R.id.login);
+
+        if(credentials.hasCredentials()) {
+            setLogoutView();
+        } else {
+            setLoginView();
+        }
 
         checkBluetooth();
 
@@ -141,7 +156,7 @@ public class MainActivity extends Activity {
         }
     }
 
-        @Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
             switch(requestCode) {
@@ -153,6 +168,33 @@ public class MainActivity extends Activity {
                     if(resultCode==RESULT_CANCELED) {
                         Toast.makeText(this,"Connection with device lost!",Toast.LENGTH_SHORT).show();
                     }
+                    break;
+                case LOGIN_REQUEST:
+                    if(resultCode == RESULT_OK) {
+                        setLogoutView();
+                    }
             }
+    }
+
+    private void setLoginView() {
+        login.setText("Login");
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivityForResult(intent, LOGIN_REQUEST);
+            }
+        });
+    }
+
+    private void setLogoutView() {
+        login.setText("Logout");
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                credentials.resetCredentials();
+                setLoginView();
+            }
+        });
     }
 }

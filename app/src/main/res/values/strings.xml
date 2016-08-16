@@ -4,5 +4,6 @@
     <string name="app_name">iHealth</string>
     <string name="title_activity_am3_s">AM3S</string>
     <string name="title_activity_bp5">BP5</string>
+    <string name="login">Pryv login</string>
 
 </resources>

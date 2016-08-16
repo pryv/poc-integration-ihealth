@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.helloworld.MainActivity" >
+    tools:context="com.ihealth.activities.MainActivity" >
     
     <Button
         android:id="@+id/btn_discoveryAM3S"
@@ -18,5 +18,12 @@
         android:layout_height="wrap_content"
         android:text="Discovery BP5 Device"
         android:onClick="discoveryBP5"/>
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login"/>
+
 
 </LinearLayout>
