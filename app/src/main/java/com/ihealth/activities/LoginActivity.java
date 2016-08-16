@@ -31,20 +31,22 @@ public class LoginActivity extends Activity {
     private Permission creatorPermission = new Permission("*", Permission.Level.manage, "Creator");
     private ArrayList<Permission> permissions;
 
+    private Credentials credentials;
+
     private String errorMessage = "Unknown error";
     public final static String DOMAIN = "pryv.me";
-    public final static String APPID = "app-android-iHealth";
+    public final static String APPID = "app-android-example";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        new Credentials(this).resetCredentials();
+        credentials = new Credentials(this);
+        credentials.resetCredentials();
 
         webView = (WebView) findViewById(R.id.webview);
 
-        // TODO: SET ELSEWHERE???
         Pryv.setDomain(DOMAIN);
 
         permissions = new ArrayList<>();
@@ -115,9 +117,9 @@ public class LoginActivity extends Activity {
         @Override
         // Save the credentials if authentication succeeds
         public void onAuthSuccess(String username, String token) {
-            new Credentials(LoginActivity.this).setCredentials(username,token);
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
+            credentials.setCredentials(username,token);
+            setResult(RESULT_OK, new Intent());
+            finish();
         }
 
         @Override

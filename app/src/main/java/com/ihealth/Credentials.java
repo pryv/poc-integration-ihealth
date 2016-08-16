@@ -55,6 +55,10 @@ public class Credentials {
         return decrypt(preferences.getString(TOKEN, null));
     }
 
+    public boolean hasCredentials() {
+        return (getToken()!=null && getUsername()!=null);
+    }
+
     /**
      * Encryption method using Base64
      * @param input: string to encrypt

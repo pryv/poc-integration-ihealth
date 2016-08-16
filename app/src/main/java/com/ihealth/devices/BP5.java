@@ -6,13 +6,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.ihealth.AndroidConnection;
 import com.ihealth.Credentials;
 import com.ihealth.R;
+import com.ihealth.activities.LoginActivity;
 import com.ihealth.communication.control.Bp5Control;
 import com.ihealth.communication.control.BpProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
+import com.pryv.Connection;
+import com.pryv.Filter;
+import com.pryv.database.DBinitCallback;
+import com.pryv.interfaces.EventsCallback;
+import com.pryv.interfaces.GetEventsCallback;
+import com.pryv.interfaces.GetStreamsCallback;
+import com.pryv.interfaces.StreamsCallback;
+import com.pryv.model.Event;
 import com.pryv.model.Stream;
 
 import org.json.JSONArray;
@@ -30,11 +38,14 @@ public class BP5 extends Activity {
 	private Stream batteryLevelStream;
 	private Stream highPressureStream;
 	private Stream lowPressureStream;
-	//private Stream ahrStream;
 	private Stream pulseStream;
 	private Stream heartBeatStream;
-	//private Stream historicalDataStream;
-	private AndroidConnection connection;
+	private Connection connection;
+	private EventsCallback eventsCallback;
+	private GetEventsCallback getEventsCallback;
+	private StreamsCallback streamsCallback;
+	private GetStreamsCallback getStreamsCallback;
+	private Credentials credentials;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,23 +53,32 @@ public class BP5 extends Activity {
 		setContentView(R.layout.activity_bp5);
 
 		// Initiate new connection to Pryv with connected account
-		Credentials credentials = new Credentials(this);
-		connection = new AndroidConnection(credentials.getUsername(), credentials.getToken());
+		credentials = new Credentials(this);
+		if(credentials.hasCredentials()) {
+			connection = new Connection(this, credentials.getUsername(), credentials.getToken(), LoginActivity.DOMAIN, true, new DBinitCallback());
 
-		Stream onlineResultsStream = connection.saveStream("BP5_onlineResults","BP5_onlineResults");
-		batteryLevelStream = connection.saveStream("BP5_batteryLevel","BP5_batteryLevel");
-		highPressureStream = connection.saveStream("BP5_highPressure","BP5_highPressure");
-		lowPressureStream = connection.saveStream("BP5_lowPressure","BP5_lowPressure");
-		heartBeatStream = connection.saveStream("BP5_heartBeat","BP5_heartBeat");
-		//ahrStream = connection.saveStream("BP5_ahr","BP5_ahr");
-		pulseStream = connection.saveStream("BP5_pulse","BP5_pulse");
-		//historicalDataStream = connection.saveStream("BP5_historicalData","BP5_historicalData");
+			Stream onlineResultsStream = new Stream("BP5_onlineResults","BP5_onlineResults");
+			batteryLevelStream = new Stream("BP5_batteryLevel","BP5_batteryLevel");
+			highPressureStream = new Stream("BP5_highPressure","BP5_highPressure");
+			lowPressureStream = new Stream("BP5_lowPressure","BP5_lowPressure");
+			heartBeatStream = new Stream("BP5_heartBeat","BP5_heartBeat");
+			pulseStream = new Stream("BP5_pulse","BP5_pulse");
 
-		onlineResultsStream.addChildStream(lowPressureStream);
-		onlineResultsStream.addChildStream(highPressureStream);
-		//onlineResultsStream.addChildStream(ahrStream);
-		onlineResultsStream.addChildStream(pulseStream);
-		onlineResultsStream.addChildStream(heartBeatStream);
+			onlineResultsStream.addChildStream(lowPressureStream);
+			onlineResultsStream.addChildStream(highPressureStream);
+			onlineResultsStream.addChildStream(pulseStream);
+			onlineResultsStream.addChildStream(heartBeatStream);
+
+			Filter scope = new Filter();
+			scope.addStream(onlineResultsStream);
+			connection.setupCacheScope(scope);
+			connection.streams.create(onlineResultsStream, streamsCallback);
+			connection.streams.create(batteryLevelStream, streamsCallback);
+			connection.streams.create(highPressureStream, streamsCallback);
+			connection.streams.create(lowPressureStream, streamsCallback);
+			connection.streams.create(heartBeatStream, streamsCallback);
+			connection.streams.create(pulseStream, streamsCallback);
+		}
 
 		Intent intent = getIntent();
 		deviceMac = intent.getStringExtra("mac");
@@ -116,7 +136,9 @@ public class BP5 extends Activity {
 					JSONObject info = new JSONObject(message);
 					String battery = info.getString(BpProfile.BATTERY_BP);
 					tv_return.setText("Battery level: " + battery);
-					connection.saveEvent(batteryLevelStream.getId(), "ratio/percent", battery);
+					if(connection!=null) {
+						connection.events.create(new Event(batteryLevelStream.getId(), "ratio/percent", battery), eventsCallback);
+					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -200,7 +222,9 @@ public class BP5 extends Activity {
 					String heartbeat = info.getString(BpProfile.FLAG_HEARTBEAT_BP);
 					String s = "Wave: "+wave+"\nHearthbeat: "+heartbeat+"\nPressure: "+pressure;
 					tv_return.setText(s);
-					connection.saveEvent(heartBeatStream.getId(), "pressure/mmhg", pressure);
+					if(connection!=null) {
+						connection.events.create(new Event(heartBeatStream.getId(), "pressure/mmhg", pressure), eventsCallback);
+					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -215,11 +239,12 @@ public class BP5 extends Activity {
 					String s = "HighPressure: "+highPressure+"\n LowPressure: "+lowPressure+"\n Ahr: "+ahr+"\n Pulse: "+pulse;
 
 					tv_return.setText(s);
-					connection.saveEvent(highPressureStream.getId(),"pressure/mmhg",highPressure);
-					connection.saveEvent(lowPressureStream.getId(),"pressure/mmhg",lowPressure);
-					//connection.saveEvent(ahrStream.getId(),"note/txt",ahr);
-					connection.saveEvent(pulseStream.getId(),"frequency/bpm",pulse);
 
+					if(connection!=null) {
+						connection.events.create(new Event(highPressureStream.getId(), "pressure/mmhg", highPressure), eventsCallback);
+						connection.events.create(new Event(lowPressureStream.getId(), "pressure/mmhg", lowPressure), eventsCallback);
+						connection.events.create(new Event(pulseStream.getId(), "frequency/bpm", pulse), eventsCallback);
+					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
