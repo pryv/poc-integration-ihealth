@@ -15,12 +15,7 @@ import com.ihealth.communication.control.AmProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
 import com.pryv.Connection;
-import com.pryv.Filter;
-import com.pryv.database.DBinitCallback;
-import com.pryv.interfaces.EventsCallback;
-import com.pryv.interfaces.GetEventsCallback;
-import com.pryv.interfaces.GetStreamsCallback;
-import com.pryv.interfaces.StreamsCallback;
+import com.pryv.exceptions.ApiException;
 import com.pryv.model.Event;
 import com.pryv.model.Stream;
 
@@ -31,8 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
 
 public class AM3S extends Activity {
     private Am3sControl am3sControl;
@@ -45,10 +39,6 @@ public class AM3S extends Activity {
     private Stream batteryStream;
     private Stream testStream;
     private Connection connection;
-    private EventsCallback eventsCallback;
-    private GetEventsCallback getEventsCallback;
-    private StreamsCallback streamsCallback;
-    private GetStreamsCallback getStreamsCallback;
     private Credentials credentials;
 
     @Override
@@ -59,26 +49,28 @@ public class AM3S extends Activity {
         // Initiate new connection to Pryv with connected account
         credentials = new Credentials(this);
         if(credentials.hasCredentials()) {
-            setCallbacks();
-            connection = new Connection(this, credentials.getUsername(), credentials.getToken(), LoginActivity.DOMAIN, true, new DBinitCallback());
+            connection = new Connection(credentials.getUsername(), credentials.getToken(), LoginActivity.DOMAIN);
             stepsStream = new Stream("AM3S_realSteps", "AM3S_realSteps");
             activitiesStream = new Stream("AM3S_syncActivities", "AM3S_syncActivities");
             sleepStream = new Stream("AM3S_syncSleeps", "AM3S_syncSleeps");
             batteryStream = new Stream("AM3S_battery", "AM3S_battery");
             testStream = new Stream("AM3S_test", "AM3S_test");
 
-            Filter scope = new Filter();
-            scope.addStream(stepsStream);
-            scope.addStream(activitiesStream);
-            scope.addStream(sleepStream);
-            scope.addStream(batteryStream);
-            scope.addStream(testStream);
-            connection.setupCacheScope(scope);
-            connection.streams.create(stepsStream, streamsCallback);
-            connection.streams.create(activitiesStream, streamsCallback);
-            connection.streams.create(sleepStream, streamsCallback);
-            connection.streams.create(batteryStream, streamsCallback);
-            connection.streams.create(testStream, streamsCallback);
+            new Thread() {
+                public void run() {
+                    try {
+                        connection.streams.create(stepsStream);
+                        connection.streams.create(activitiesStream);
+                        connection.streams.create(sleepStream);
+                        connection.streams.create(batteryStream);
+                        connection.streams.create(testStream);
+                    } catch (IOException e) {
+                        Log.e("Stream creation error", e.toString());
+                    } catch (ApiException e) {
+                        Log.e("Stream creation error", e.getMsg());
+                    }                }
+            }.start();
+
         }
 
         clientId = iHealthDevicesManager.getInstance().registerClientCallback(iHealthDevicesCallback);
@@ -136,10 +128,20 @@ public class AM3S extends Activity {
                 case AmProfile.ACTION_QUERY_STATE_AM:
                     try {
                         JSONObject info = new JSONObject(message);
-                        String battery = info.getString(AmProfile.QUERY_BATTERY_AM);
+                        final String battery = info.getString(AmProfile.QUERY_BATTERY_AM);
                         tv_return.setText("Battery: " + battery);
                         if(connection!=null) {
-                            connection.events.create(new Event(batteryStream.getId(), "ratio/percent", battery), eventsCallback);
+                            new Thread() {
+                                public void run() {
+                                    try {
+                                        connection.events.create(new Event(batteryStream.getId(), "ratio/percent", battery));
+                                    } catch (IOException e) {
+                                        Log.e("Event creation error", e.toString());
+                                    } catch (ApiException e) {
+                                        Log.e("Event creation error", e.getMsg());
+                                    }                                }
+                            }.start();
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -184,13 +186,23 @@ public class AM3S extends Activity {
 
                         for (int i = 0; i < activities.length(); i++) {
                             JSONObject activity = activities.getJSONObject(i);
-                            String time = activity.getString(AmProfile.SYNC_SLEEP_DATA_TIME_AM);
-                            String level = activity.getString(AmProfile.SYNC_SLEEP_DATA_LEVEL_AM);
+                            final String time = activity.getString(AmProfile.SYNC_SLEEP_DATA_TIME_AM);
+                            final String level = activity.getString(AmProfile.SYNC_SLEEP_DATA_LEVEL_AM);
                             if(connection!=null) {
                                 double unixTime = getUnixTime(time);
-                                Event e = new Event(sleepStream.getId(), "count/generic", level);
-                                e.setTime(unixTime);
-                                connection.events.create(e, eventsCallback);
+                                final Event event = new Event(sleepStream.getId(), "count/generic", level);
+                                event.setTime(unixTime);
+                                new Thread() {
+                                    public void run() {
+                                        try {
+                                            connection.events.create(event);
+                                        } catch (IOException e) {
+                                            Log.e("Event creation error", e.toString());
+                                        } catch (ApiException e) {
+                                            Log.e("Event creation error", e.getMsg());
+                                        }                                    }
+                                }.start();
+
                             }
                         }
                     } catch (JSONException e) {
@@ -214,15 +226,22 @@ public class AM3S extends Activity {
 
                             if(connection!=null) {
                                 double unixTime = getUnixTime(time);
-                                Event e1 = new Event(activitiesStream.getId(), "time/min", stepLength);
-                                e1.setTime(unixTime);
-                                Event e2 = new Event(activitiesStream.getId(), "count/steps", steps);
-                                e1.setTime(unixTime);
-                                Event e3 = new Event(activitiesStream.getId(), "energy/cal", calories);
-                                e1.setTime(unixTime);
-                                connection.events.create(e1, eventsCallback);
-                                connection.events.create(e2, eventsCallback);
-                                connection.events.create(e3, eventsCallback);
+                                final Event e1 = new Event(activitiesStream.getId(), "time/min", stepLength).setTime(unixTime);
+                                final Event e2 = new Event(activitiesStream.getId(), "count/steps", steps).setTime(unixTime);
+                                final Event e3 = new Event(activitiesStream.getId(), "energy/cal", calories).setTime(unixTime);
+                                new Thread() {
+                                    public void run() {
+                                        try {
+                                            connection.events.create(e1);
+                                            connection.events.create(e2);
+                                            connection.events.create(e3);
+                                        } catch (IOException e) {
+                                            Log.e("Event creation error", e.toString());
+                                        } catch (ApiException e) {
+                                            Log.e("Event creation error", e.getMsg());
+                                        }                                    }
+                                }.start();
+
                             }
                         }
                     } catch (JSONException e) {
@@ -232,10 +251,20 @@ public class AM3S extends Activity {
                 case AmProfile.ACTION_SYNC_REAL_DATA_AM:
                     try {
                         JSONObject info = new JSONObject(message);
-                        String real_info = info.getString(AmProfile.SYNC_REAL_STEP_AM);
+                        final String real_info = info.getString(AmProfile.SYNC_REAL_STEP_AM);
                         tv_return.setText("Real steps: " + real_info);
                         if(connection!=null) {
-                            connection.events.create(new Event(stepsStream.getId(), "count/generic", real_info), eventsCallback);
+                            new Thread() {
+                                public void run() {
+                                    try {
+                                        connection.events.create(new Event(stepsStream.getId(), "count/generic", real_info));
+                                    } catch (IOException e) {
+                                        Log.e("Event creation error", e.toString());
+                                    } catch (ApiException e) {
+                                        Log.e("Event creation error", e.getMsg());
+                                    }                                }
+                            }.start();
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -330,106 +359,4 @@ public class AM3S extends Activity {
         am3sControl.sendRandom();
     }
 
-    /**
-     * Initiate custom callbacks
-     */
-    private void setCallbacks() {
-
-        //Called when actions related to events creation/modification complete
-        eventsCallback = new EventsCallback() {
-
-            @Override
-            public void onApiSuccess(String s, Event event, String s1, Double aDouble) {
-                Log.i("Pryv", s);
-            }
-
-            @Override
-            public void onApiError(String s, Double aDouble) {
-                Log.e("Pryv", s);
-            }
-
-            @Override
-            public void onCacheSuccess(String s, Event event) {
-                Log.i("Pryv", s);
-            }
-
-            @Override
-            public void onCacheError(String s) {
-                Log.e("Pryv", s);
-            }
-        };
-
-        //Called when actions related to streams creation/modification complete
-        streamsCallback = new StreamsCallback() {
-
-            @Override
-            public void onApiSuccess(String s, Stream stream, Double aDouble) {
-                Log.i("Pryv", s);
-            }
-
-            @Override
-            public void onApiError(String s, Double aDouble) {
-                Log.e("Pryv", s);
-            }
-
-            @Override
-            public void onCacheSuccess(String s, Stream stream) {
-                Log.i("Pryv", s);
-            }
-
-            @Override
-            public void onCacheError(String s) {
-                Log.e("Pryv", s);
-            }
-
-        };
-
-        //Called when actions related to events retrieval complete
-        getEventsCallback = new GetEventsCallback() {
-            @Override
-            public void cacheCallback(List<Event> list, Map<String, Double> map) {
-                Log.i("Pryv", list.size() + " events retrieved from cache.");
-            }
-
-            @Override
-            public void onCacheError(String s) {
-                Log.e("Pryv", s);
-            }
-
-            @Override
-            public void apiCallback(List<Event> list, Map<String, Double> map, Double aDouble) {
-                Log.i("Pryv", list.size() + " events retrieved from API.");
-            }
-
-            @Override
-            public void onApiError(String s, Double aDouble) {
-                Log.e("Pryv", s);
-            }
-        };
-
-        //Called when actions related to streams retrieval complete
-        getStreamsCallback = new GetStreamsCallback() {
-
-            @Override
-            public void cacheCallback(Map<String, Stream> map, Map<String, Double> map1) {
-                Log.i("Pryv", map.size() + " streams retrieved from cache.");
-            }
-
-            @Override
-            public void onCacheError(String s) {
-                Log.e("Pryv", s);
-            }
-
-            @Override
-            public void apiCallback(Map<String, Stream> map, Map<String, Double> map1, Double aDouble) {
-                Log.i("Pryv", map.size() + " streams retrieved from API.");
-            }
-
-            @Override
-            public void onApiError(String s, Double aDouble) {
-                Log.e("Pryv", s);
-            }
-        };
-
-    }
 }

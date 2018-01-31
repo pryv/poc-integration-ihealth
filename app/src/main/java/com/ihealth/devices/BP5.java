@@ -3,6 +3,7 @@ package com.ihealth.devices;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,18 +15,15 @@ import com.ihealth.communication.control.BpProfile;
 import com.ihealth.communication.manager.iHealthDevicesCallback;
 import com.ihealth.communication.manager.iHealthDevicesManager;
 import com.pryv.Connection;
-import com.pryv.Filter;
-import com.pryv.database.DBinitCallback;
-import com.pryv.interfaces.EventsCallback;
-import com.pryv.interfaces.GetEventsCallback;
-import com.pryv.interfaces.GetStreamsCallback;
-import com.pryv.interfaces.StreamsCallback;
+import com.pryv.exceptions.ApiException;
 import com.pryv.model.Event;
 import com.pryv.model.Stream;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 /**
  * Activity for testing Bp5 device. 
@@ -41,10 +39,6 @@ public class BP5 extends Activity {
 	private Stream pulseStream;
 	private Stream heartBeatStream;
 	private Connection connection;
-	private EventsCallback eventsCallback;
-	private GetEventsCallback getEventsCallback;
-	private StreamsCallback streamsCallback;
-	private GetStreamsCallback getStreamsCallback;
 	private Credentials credentials;
 
 	@Override
@@ -55,29 +49,36 @@ public class BP5 extends Activity {
 		// Initiate new connection to Pryv with connected account
 		credentials = new Credentials(this);
 		if(credentials.hasCredentials()) {
-			connection = new Connection(this, credentials.getUsername(), credentials.getToken(), LoginActivity.DOMAIN, true, new DBinitCallback());
+			connection = new Connection(credentials.getUsername(), credentials.getToken(), LoginActivity.DOMAIN);
 
-			Stream onlineResultsStream = new Stream("BP5_onlineResults","BP5_onlineResults");
 			batteryLevelStream = new Stream("BP5_batteryLevel","BP5_batteryLevel");
 			highPressureStream = new Stream("BP5_highPressure","BP5_highPressure");
 			lowPressureStream = new Stream("BP5_lowPressure","BP5_lowPressure");
 			heartBeatStream = new Stream("BP5_heartBeat","BP5_heartBeat");
 			pulseStream = new Stream("BP5_pulse","BP5_pulse");
 
-			onlineResultsStream.addChildStream(lowPressureStream);
-			onlineResultsStream.addChildStream(highPressureStream);
-			onlineResultsStream.addChildStream(pulseStream);
-			onlineResultsStream.addChildStream(heartBeatStream);
+			final Stream onlineResultsStream = new Stream("BP5_onlineResults","BP5_onlineResults")
+				.addChildStream(lowPressureStream)
+				.addChildStream(highPressureStream)
+				.addChildStream(pulseStream)
+				.addChildStream(heartBeatStream);
 
-			Filter scope = new Filter();
-			scope.addStream(onlineResultsStream);
-			connection.setupCacheScope(scope);
-			connection.streams.create(onlineResultsStream, streamsCallback);
-			connection.streams.create(batteryLevelStream, streamsCallback);
-			connection.streams.create(highPressureStream, streamsCallback);
-			connection.streams.create(lowPressureStream, streamsCallback);
-			connection.streams.create(heartBeatStream, streamsCallback);
-			connection.streams.create(pulseStream, streamsCallback);
+			new Thread() {
+				public void run() {
+					try {
+						connection.streams.create(onlineResultsStream);
+						connection.streams.create(batteryLevelStream);
+						connection.streams.create(highPressureStream);
+						connection.streams.create(lowPressureStream);
+						connection.streams.create(heartBeatStream);
+						connection.streams.create(pulseStream);
+					} catch (IOException e) {
+						Log.e("Stream creation error", e.toString());
+					} catch (ApiException e) {
+						Log.e("Stream creation error", e.getMsg());
+					}				}
+			}.start();
+
 		}
 
 		Intent intent = getIntent();
@@ -134,15 +135,26 @@ public class BP5 extends Activity {
 			if(BpProfile.ACTION_BATTERY_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
-					String battery = info.getString(BpProfile.BATTERY_BP);
+					final String battery = info.getString(BpProfile.BATTERY_BP);
 					tv_return.setText("Battery level: " + battery);
 					if(connection!=null) {
-						connection.events.create(new Event(batteryLevelStream.getId(), "ratio/percent", battery), eventsCallback);
+						new Thread() {
+							public void run() {
+								try{
+									connection.events.create(new Event(batteryLevelStream.getId(), "ratio/percent", battery));
+								}  catch (IOException e) {
+									Log.e("Event creation error", e.toString());
+								} catch (ApiException e) {
+									Log.e("Event creation error", e.getMsg());
+								}
+							}
+						}.start();
+
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				
+
 			} else if(BpProfile.ACTION_DISENABLE_OFFLINE_BP.equals(action)){
 				tv_return.setText("Disable offline");
 			} else if(BpProfile.ACTION_ENABLE_OFFLINE_BP.equals(action)){
@@ -217,13 +229,23 @@ public class BP5 extends Activity {
 			} else if(BpProfile.ACTION_ONLINE_PULSEWAVE_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
-					String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
+					final String pressure =info.getString(BpProfile.BLOOD_PRESSURE_BP);
 					String wave = info.getString(BpProfile.PULSEWAVE_BP);
 					String heartbeat = info.getString(BpProfile.FLAG_HEARTBEAT_BP);
 					String s = "Wave: "+wave+"\nHearthbeat: "+heartbeat+"\nPressure: "+pressure;
 					tv_return.setText(s);
 					if(connection!=null) {
-						connection.events.create(new Event(heartBeatStream.getId(), "pressure/mmhg", pressure), eventsCallback);
+						new Thread() {
+							public void run() {
+								try{
+									connection.events.create(new Event(heartBeatStream.getId(), "pressure/mmhg", pressure));
+								}  catch (IOException e) {
+									Log.e("Event creation error", e.toString());
+								} catch (ApiException e) {
+									Log.e("Event creation error", e.getMsg());
+								}							}
+						}.start();
+
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -232,18 +254,28 @@ public class BP5 extends Activity {
 			} else if(BpProfile.ACTION_ONLINE_RESULT_BP.equals(action)){
 				try {
 					JSONObject info = new JSONObject(message);
-					String highPressure =info.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
-					String lowPressure =info.getString(BpProfile.LOW_BLOOD_PRESSURE_BP);
+					final String highPressure =info.getString(BpProfile.HIGH_BLOOD_PRESSURE_BP);
+					final String lowPressure =info.getString(BpProfile.LOW_BLOOD_PRESSURE_BP);
 					String ahr =info.getString(BpProfile.MEASUREMENT_AHR_BP);
-					String pulse =info.getString(BpProfile.PULSE_BP);
+					final String pulse =info.getString(BpProfile.PULSE_BP);
 					String s = "HighPressure: "+highPressure+"\n LowPressure: "+lowPressure+"\n Ahr: "+ahr+"\n Pulse: "+pulse;
 
 					tv_return.setText(s);
 
 					if(connection!=null) {
-						connection.events.create(new Event(highPressureStream.getId(), "pressure/mmhg", highPressure), eventsCallback);
-						connection.events.create(new Event(lowPressureStream.getId(), "pressure/mmhg", lowPressure), eventsCallback);
-						connection.events.create(new Event(pulseStream.getId(), "frequency/bpm", pulse), eventsCallback);
+						new Thread() {
+							public void run() {
+								try{
+									connection.events.create(new Event(highPressureStream.getId(), "pressure/mmhg", highPressure));
+									connection.events.create(new Event(lowPressureStream.getId(), "pressure/mmhg", lowPressure));
+									connection.events.create(new Event(pulseStream.getId(), "frequency/bpm", pulse));
+								}  catch (IOException e) {
+									Log.e("Event creation error", e.toString());
+								} catch (ApiException e) {
+									Log.e("Event creation error", e.getMsg());
+								}							}
+						}.start();
+
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
