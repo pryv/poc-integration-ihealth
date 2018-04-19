@@ -24,6 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Activity for testing Bp5 device. 
@@ -33,11 +35,15 @@ public class BP5 extends Activity {
 	private String deviceMac;
 	private int clientCallbackId;
 	private TextView tv_return;
+	/*
 	private Stream batteryLevelStream;
 	private Stream highPressureStream;
 	private Stream lowPressureStream;
 	private Stream pulseStream;
 	private Stream heartBeatStream;
+	*/
+	private Stream ihealthBP5Stream;
+
 	private Connection connection;
 	private Credentials credentials;
 
@@ -50,7 +56,7 @@ public class BP5 extends Activity {
 		credentials = new Credentials(this);
 		if(credentials.hasCredentials()) {
 			connection = new Connection(credentials.getUsername(), credentials.getToken(), LoginActivity.DOMAIN);
-
+			/*
 			batteryLevelStream = new Stream("BP5_batteryLevel","BP5_batteryLevel");
 			highPressureStream = new Stream("BP5_highPressure","BP5_highPressure");
 			lowPressureStream = new Stream("BP5_lowPressure","BP5_lowPressure");
@@ -62,16 +68,22 @@ public class BP5 extends Activity {
 				.addChildStream(highPressureStream)
 				.addChildStream(pulseStream)
 				.addChildStream(heartBeatStream);
+			*/
+			ihealthBP5Stream = new Stream("ihealth_bp5","iHealth BP5");
 
 			new Thread() {
 				public void run() {
 					try {
+						/*
 						connection.streams.create(onlineResultsStream);
 						connection.streams.create(batteryLevelStream);
 						connection.streams.create(highPressureStream);
 						connection.streams.create(lowPressureStream);
 						connection.streams.create(heartBeatStream);
 						connection.streams.create(pulseStream);
+						*/
+						connection.streams.create(ihealthBP5Stream);
+
 					} catch (IOException e) {
 						Log.e("Stream creation error", e.toString());
 					} catch (ApiException e) {
@@ -137,6 +149,7 @@ public class BP5 extends Activity {
 					JSONObject info = new JSONObject(message);
 					final String battery = info.getString(BpProfile.BATTERY_BP);
 					tv_return.setText("Battery level: " + battery);
+					/*
 					if(connection!=null) {
 						new Thread() {
 							public void run() {
@@ -150,7 +163,7 @@ public class BP5 extends Activity {
 							}
 						}.start();
 
-					}
+					}*/
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -234,11 +247,12 @@ public class BP5 extends Activity {
 					String heartbeat = info.getString(BpProfile.FLAG_HEARTBEAT_BP);
 					String s = "Wave: "+wave+"\nHearthbeat: "+heartbeat+"\nPressure: "+pressure;
 					tv_return.setText(s);
+					/*
 					if(connection!=null) {
 						new Thread() {
 							public void run() {
 								try{
-									connection.events.create(new Event(heartBeatStream.getId(), "pressure/mmhg", pressure));
+									connection.events.create(new Event(heartBeatStream.getId(), "blood-pressure/mmhg-bpm", pressure));
 								}  catch (IOException e) {
 									Log.e("Event creation error", e.toString());
 								} catch (ApiException e) {
@@ -246,7 +260,7 @@ public class BP5 extends Activity {
 								}							}
 						}.start();
 
-					}
+					}*/
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -266,16 +280,22 @@ public class BP5 extends Activity {
 						new Thread() {
 							public void run() {
 								try{
-									connection.events.create(new Event(highPressureStream.getId(), "pressure/mmhg", highPressure));
-									connection.events.create(new Event(lowPressureStream.getId(), "pressure/mmhg", lowPressure));
-									connection.events.create(new Event(pulseStream.getId(), "frequency/bpm", pulse));
+									Map<String, Double> hm = new HashMap<>();
+									hm.put("diastolic", Double.valueOf(highPressure));
+									hm.put("systolic", Double.valueOf(lowPressure));
+									hm.put("rate", Double.valueOf(pulse));
+									Event newEvent = new Event()
+											.setStreamId(ihealthBP5Stream.getId())
+											.setType("blood-pressure/mmhg-bpm")
+											.setContent(hm);
+									connection.events.create(newEvent);
 								}  catch (IOException e) {
 									Log.e("Event creation error", e.toString());
 								} catch (ApiException e) {
 									Log.e("Event creation error", e.getMsg());
-								}							}
+								}
+							}
 						}.start();
-
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
