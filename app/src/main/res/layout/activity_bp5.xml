@@ -9,28 +9,32 @@
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:text="Getbattery"
-        android:onClick="getBattery"/>
+        android:onClick="getBattery"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btn_isOfflineMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:text="IsOfflineMeasure"
-        android:onClick="isOfflineMeasure"/>
+        android:onClick="isOfflineMeasure"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btn_enableOfflineMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:text="EnableOfflineMeasure"
-        android:onClick="enableOfflineMeasure"/>
+        android:onClick="enableOfflineMeasure"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btn_disableOfflineMeasure"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:text="DisableOfflineMeasure"
-        android:onClick="disableOfflineMeasure"/>
+        android:onClick="disableOfflineMeasure"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btn_startMeasure"

@@ -118,9 +118,13 @@ public class BP5 extends Activity {
 	}
 
 	private void reset() {
-		if(bp5Control != null)
-			bp5Control.disconnect();
-		iHealthDevicesManager.getInstance().unRegisterClientCallback(clientCallbackId);
+        try {
+            if(bp5Control != null)
+                bp5Control.disconnect();
+            iHealthDevicesManager.getInstance().unRegisterClientCallback(clientCallbackId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 
 	private iHealthDevicesCallback iHealthDevicesCallback = new iHealthDevicesCallback() {
